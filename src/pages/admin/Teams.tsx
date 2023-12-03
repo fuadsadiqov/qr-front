@@ -12,22 +12,26 @@ import {
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import TeamDrawer from "../../components/TeamDrawer";
-
-interface Team {
-  name: string;
-  _id: number;
-  teamMembers: {
-    name: string;
-    type: string;
-  }[];
-}
+import { TeamWithMembers } from "../../interfaces/method";
+import { FaRegTrashAlt } from "react-icons/fa";
+import CustomizedSnackbars from "../../components/Snackbar";
 
 function Teams() {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<TeamWithMembers[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState("");
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const removeTeam = async (teamId: string) => {
+    fetch(
+      environment.apiUrl + TEAM_URL.DELETE(teamId),
+      fetchApi(ApiMethods.DELETE, undefined)
+    )
+      .then((res) => res.json())
+      .then((data) => data && setAlertOpen("Team remove successfully!"));
   };
 
   useEffect(() => {
@@ -37,21 +41,26 @@ function Teams() {
     )
       .then((res) => res.json())
       .then((data) => setTeams(data));
-  }, []);
-
+  }, [teams]);
 
   return (
     <div>
-      <div className="flex w-full items-center gap-32">
-        <p>Teams</p>
+      <div className="flex w-full items-center justify-between">
+        <h1 className="text-2xl font-medium">Teams</h1>
         <Button variant="contained" onClick={toggleDrawer}>
           Add team
         </Button>
       </div>
       {teams.map((team) => (
-        <div key={team._id} className="mt-10 border-1 rounded-md p-3">
-          <p>{team.name}</p>
-          <Table>
+        <div key={team._id} className="mt-10 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <h4>{team.name}</h4>
+            <FaRegTrashAlt
+              className="text-xl cursor-pointer hover:text-red-500"
+              onClick={() => removeTeam(team._id)}
+            />
+          </div>
+          <Table className="border-1 rounded-md">
             <TableHead>
               <TableRow>
                 <TableCell>Image</TableCell>
@@ -73,6 +82,9 @@ function Teams() {
           </Table>
         </div>
       ))}
+      {alertOpen && (
+        <CustomizedSnackbars open={alertOpen} setOpen={setAlertOpen} />
+      )}
       <TeamDrawer open={isDrawerOpen} onClose={toggleDrawer} />
     </div>
   );

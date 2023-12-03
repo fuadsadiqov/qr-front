@@ -4,11 +4,8 @@ import { fetchApi } from "../utils/fetch";
 import { TEAM_URL } from "../constants/url";
 import { ApiMethods } from "../interfaces/method";
 import { useNavigate } from "react-router-dom";
+import { Team } from '../interfaces/method'
 
-interface Team {
-  name: string;
-  _id: number;
-}
 
 function AllTeams() {
   const [teams, setTeams] = useState<Team[]>([]);

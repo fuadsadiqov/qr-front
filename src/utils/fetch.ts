@@ -5,8 +5,6 @@ export const fetchApi = (method: string, body: any) => {
         },
         method,
     }
-    if(body){
-        options['body'] = JSON.stringify(body)
-    }
+    body ? options['body'] = JSON.stringify(body) : undefined;
     return options;
 }

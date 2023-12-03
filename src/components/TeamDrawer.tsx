@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import TextField from "@mui/material/TextField";
 import { Input } from "@mui/material";
+import { IoMdClose } from "react-icons/io";
 
 interface TeamDrawerProps {
   open: boolean;
@@ -50,6 +51,10 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
   return (
     <Drawer open={open} onClose={onClose} anchor="right">
       <div className="p-5 flex flex-col">
+        <div className="flex justify-between items-center">
+          <h1 className="font-medium mb-2 text-2xl">Add new team</h1>
+          <IoMdClose onClick={onClose} className="text-3xl cursor-pointer" />
+        </div>
         <Formik
           initialValues={{
             teamName: "",
@@ -61,7 +66,7 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
             <Form>
               <TextField
                 required
-                label="team name"
+                label="Team name"
                 name="teamName"
                 value={values.teamName}
                 onChange={handleChange}
@@ -88,7 +93,7 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
                           onChange={handleChange}
                         />
                         <Input
-                          onChange={(e) : any => {
+                          onChange={(e: any): any => {
                             onFileUpload(e);
                             setFieldValue(
                               `members.${index}.file`,
@@ -107,7 +112,7 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
                       onClick={() =>
                         push({ memberName: "", memberType: "", file: null })
                       }
-                      sx={{ marginRight: '10px'}}
+                      sx={{ marginRight: "10px" }}
                     >
                       Add Member
                     </Button>
