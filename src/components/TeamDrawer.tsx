@@ -21,9 +21,16 @@ import CustomizedSnackbars from "./Snackbar";
 interface TeamDrawerProps {
   open: boolean;
   onClose: () => void;
+  setNewTeamFetching: (value: boolean) => void;
+  newTeamFetching: boolean;
 }
 
-export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
+export default function TeamDrawer({
+  open,
+  onClose,
+  setNewTeamFetching,
+  newTeamFetching,
+}: TeamDrawerProps) {
   const [snackbar, setSnackbar] = useState<SnackbarInterface>({
     status: null,
     opened: false,
@@ -67,18 +74,14 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
         const res = await sendImage({ base64Image: data });
         response = res;
         return response;
-        
       } catch (error) {
         console.error("Error:", error);
       }
     }
-  }
+  };
 
   const handleSubmit = (values: any) => {
-    fetch(
-      environment.apiUrl + TEAM_URL.POST,
-      fetchApi(ApiMethods.POST, values)
-    )
+    fetch(environment.apiUrl + TEAM_URL.POST, fetchApi(ApiMethods.POST, values))
       .then((res) => res.json())
       .then((data) => {
         if (data) {
@@ -87,6 +90,7 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
             status: SnackbarStatus.SUCCCESSFULL,
             message: "Team added successfully",
           });
+          setNewTeamFetching(!newTeamFetching);
           setTimeout(() => {
             resetSnackbar();
             onClose();
@@ -123,10 +127,7 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
                 {({ push, remove }) => (
                   <>
                     {values.teamMembers.map((member, index) => (
-                      <div
-                        key={index}
-                        className="my-5 flex gap-3 items-center"
-                      >
+                      <div key={index} className="my-5 flex gap-3 items-center">
                         <TextField
                           required
                           label={`Member Name`}
@@ -167,10 +168,11 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
                         {values.teamMembers[index].image && (
                           <img
                             className="w-12 h-12 object-cover"
-                            src={`${environment.apiUrl +
+                            src={`${
+                              environment.apiUrl +
                               "uploads/" +
                               values.teamMembers[index].image
-                              }`}
+                            }`}
                             alt=""
                           />
                         )}
@@ -211,4 +213,4 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
       )}
     </Drawer>
   );
-};
+}

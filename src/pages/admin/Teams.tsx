@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { environment } from "../../environment/environment.prod";
 import { TEAM_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
-import { ApiMethods, SnackbarInterface, SnackbarStatus } from "../../interfaces/method";
+import {
+  ApiMethods,
+  SnackbarInterface,
+  SnackbarStatus,
+} from "../../interfaces/method";
 import {
   Table,
   TableBody,
@@ -19,10 +23,11 @@ import CustomizedSnackbars from "../../components/Snackbar";
 function Teams() {
   const [teams, setTeams] = useState<TeamWithMembers[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [newTeamFetching, setNewTeamFetching] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarInterface>({
     opened: false,
     status: null,
-    message: "" 
+    message: "",
   });
 
   const toggleDrawer = () => {
@@ -35,7 +40,15 @@ function Teams() {
       fetchApi(ApiMethods.DELETE, undefined)
     )
       .then((res) => res.json())
-      .then((data) => data && setSnackbar({opened: true, status: SnackbarStatus.SUCCCESSFULL, message: "Team remove successfully!"}));
+      .then(
+        (data) =>
+          data &&
+          setSnackbar({
+            opened: true,
+            status: SnackbarStatus.SUCCCESSFULL,
+            message: "Team remove successfully!",
+          })
+      );
   };
 
   useEffect(() => {
@@ -45,8 +58,9 @@ function Teams() {
     )
       .then((res) => res.json())
       .then((data) => setTeams(data));
-  }, []);
+  }, [newTeamFetching]);
 
+  console.log(newTeamFetching);
   return (
     <div>
       <div className="flex w-full items-center justify-between">
@@ -61,7 +75,10 @@ function Teams() {
             <h4>{team.name}</h4>
             <FaRegTrashAlt
               className="text-xl cursor-pointer hover:text-red-500"
-              onClick={() => removeTeam(team._id)}
+              onClick={() => {
+                removeTeam(team._id);
+                setNewTeamFetching(!newTeamFetching);
+              }}
             />
           </div>
           <Table className="border-1 rounded-md">
@@ -76,10 +93,21 @@ function Teams() {
               {team.teamMembers.map((member, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <img src={`${member.image ? environment.apiUrl+"uploads/"+member.image : "/biker 1.png"}`} alt="" width={30} height={30} />
+                    <img
+                      src={`${
+                        member.image
+                          ? environment.apiUrl + "uploads/" + member.image
+                          : "/biker 1.png"
+                      }`}
+                      alt=""
+                      width={30}
+                      height={30}
+                    />
                   </TableCell>
                   <TableCell>{member.name}</TableCell>
-                  <TableCell>{member.type == 1 ? "Təqdimatçı" : "İzləyici"}</TableCell>
+                  <TableCell>
+                    {member.type == 1 ? "Təqdimatçı" : "İzləyici"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -89,7 +117,12 @@ function Teams() {
       {snackbar.opened && (
         <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       )}
-      <TeamDrawer open={isDrawerOpen} onClose={toggleDrawer} />
+      <TeamDrawer
+        open={isDrawerOpen}
+        onClose={toggleDrawer}
+        setNewTeamFetching={setNewTeamFetching}
+        newTeamFetching={newTeamFetching}
+      />
     </div>
   );
 }
