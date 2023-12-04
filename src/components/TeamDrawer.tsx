@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { environment } from "../environment/environment.prod";
 import { fetchApi } from "../utils/fetch";
-import { ApiMethods } from "../interfaces/method";
+import {
+  ApiMethods,
+  SnackbarInterface,
+  SnackbarStatus,
+  UserType,
+} from "../interfaces/method";
 import { IMAGE_URL, TEAM_URL } from "../constants/url";
 import { getBase64 } from "../helpers/getBase64";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { Formik, Form, Field, FieldArray } from "formik";
+import { Formik, Form, FieldArray } from "formik";
 import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import TextField from "@mui/material/TextField";
-import { Input } from "@mui/material";
+import { Input, MenuItem, Select } from "@mui/material";
 import { IoMdClose } from "react-icons/io";
+import CustomizedSnackbars from "./Snackbar";
 
 interface TeamDrawerProps {
   open: boolean;
@@ -18,36 +24,70 @@ interface TeamDrawerProps {
 }
 
 export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
-  const [fileName, setFileName] = useState("");
-  const imageBase64: any = {
-    base64Image: "",
-  };
-
-  const onFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const [snackbar, setSnackbar] = useState<SnackbarInterface>({
+    status: null,
+    opened: false,
+    message: "",
+  });
+  const onFileUpload = async (e: any) => {
+    const file = e;
+    let response: string | undefined = "";
     if (file) {
-      setFileName(file.name);
-      getBase64(file).then((data: any) => (imageBase64.base64Image = data));
-      console.log(file.name);
+      try {
+        const data = await getBase64(file);
+        const res = await sendImage({ base64Image: data });
+        response = res;
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
+    return response;
   };
 
-  const sendImage = () => {
-    fetch(
-      environment.apiUrl + IMAGE_URL.POST,
-      fetchApi(ApiMethods.POST, imageBase64)
-    )
-      .then((res) => res.json())
-      .then((data) => setFileName(data.fileName));
+  const sendImage = async (base64Image: any) => {
+    try {
+      let fileName = "";
+      const response = await fetch(
+        environment.apiUrl + IMAGE_URL.POST,
+        fetchApi(ApiMethods.POST, base64Image)
+      );
+      const responseJson = await response.json();
+      fileName = await responseJson.fileName;
+      return fileName;
+    } catch (error) {
+      setSnackbar({
+        opened: true,
+        status: SnackbarStatus.UNSUCCESSFULL,
+        message: "Please add another image",
+      });
+      setTimeout(() => {
+        resetSnackbar();
+      }, 3000);
+      console.error("Error sendind image: ", error);
+    }
   };
 
   const handleSubmit = (values: any) => {
     fetch(environment.apiUrl + TEAM_URL.POST, fetchApi(ApiMethods.POST, values))
       .then((res) => res.json())
-      .then((data) => console.log(data));
-    console.log(values);
+      .then((data) => {
+        if(data){
+          setSnackbar({opened: true, status: SnackbarStatus.SUCCCESSFULL, message: "Team added successfully"})
+          setTimeout(() => {
+            resetSnackbar()
+            onClose();
+          }, 2000);
+        }
+      });
   };
 
+  const resetSnackbar = () => {
+    setSnackbar({
+      message: "",
+      status: null,
+      opened: false,
+    });
+  };
   return (
     <Drawer open={open} onClose={onClose} anchor="right">
       <div className="p-5 flex flex-col">
@@ -57,8 +97,8 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
         </div>
         <Formik
           initialValues={{
-            teamName: "",
-            members: [{ memberName: "", memberType: "", file: null }],
+            name: "",
+            teamMembers: [{ name: "", type: UserType.VIEWER, image: "" }],
           }}
           onSubmit={handleSubmit}
         >
@@ -67,51 +107,74 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
               <TextField
                 required
                 label="Team name"
-                name="teamName"
-                value={values.teamName}
+                name="name"
+                value={values.name}
                 onChange={handleChange}
               />
 
-              <FieldArray name="members">
+              <FieldArray name="teamMembers">
                 {({ push, remove }) => (
                   <>
-                    {values.members.map((member, index) => (
+                    {values.teamMembers.map((member, index) => (
                       <div
                         key={index}
-                        className="my-5 flex gap-3 items-center justify-center"
+                        className="my-5 flex gap-3 items-center"
                       >
                         <TextField
+                          required
                           label={`Member Name`}
-                          name={`members.${index}.memberName`}
-                          value={member.memberName}
+                          name={`teamMembers.${index}.name`}
+                          value={member.name}
                           onChange={handleChange}
                         />
-                        <TextField
+                        <Select
+                          required
                           label={`Member Type`}
-                          name={`members.${index}.memberType`}
-                          value={member.memberType}
+                          name={`teamMembers.${index}.type`}
+                          value={member.type}
                           onChange={handleChange}
-                        />
+                        >
+                          <MenuItem value={UserType.VIEWER}>Viewer</MenuItem>
+                          <MenuItem value={UserType.PRESENTER}>Presenter</MenuItem>
+                        </Select>
                         <Input
-                          onChange={(e: any): any => {
-                            onFileUpload(e);
-                            setFieldValue(
-                              `members.${index}.file`,
-                              e.target.files?.[0]
-                            );
-                            sendImage();
+                          onChange={async (e: any) => {
+                            try {
+                              const result = await onFileUpload(
+                                e.target.files[0]
+                              );
+                              setFieldValue(
+                                `teamMembers.${index}.image`,
+                                result
+                              );
+                            } catch (error) {
+                              console.error("Error:", error);
+                            }
                           }}
+                          required
                           type="file"
                           className="w-[200px]"
                         />
-                        <FaRegTrashAlt onClick={() => remove(index)} />
+                        {values.teamMembers[index].image && (
+                          <img
+                            className="w-12 h-12 object-cover"
+                            src={`${
+                              environment.apiUrl +
+                              "uploads/" +
+                              values.teamMembers[index].image
+                            }`}
+                            alt=""
+                          />
+                        )}
+                        <FaRegTrashAlt
+                          className="hover:text-red-500 transition-colors cursor-pointer"
+                          onClick={() => values.teamMembers.length != 1 && remove(index)}
+                        />
                       </div>
                     ))}
                     <Button
                       variant="contained"
-                      onClick={() =>
-                        push({ memberName: "", memberType: "", file: null })
-                      }
+                      onClick={() => push({ name: "", type: UserType.VIEWER, image: "" })}
                       sx={{ marginRight: "10px" }}
                     >
                       Add Member
@@ -119,14 +182,16 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
                   </>
                 )}
               </FieldArray>
-
-              <Button type="submit" variant="contained" className="mt-3 m-5">
+              <Button type="submit" color="success" variant="contained" className="mt-5">
                 Submit
               </Button>
             </Form>
           )}
         </Formik>
       </div>
+      {snackbar.opened && (
+        <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
+      )}
     </Drawer>
   );
 }

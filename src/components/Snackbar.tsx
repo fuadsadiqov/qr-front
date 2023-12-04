@@ -16,14 +16,14 @@ export default function CustomizedSnackbars(props: any) {
     if (reason === 'clickaway') {
       return;
     }
-    setOpen("");
+    setOpen({opened: false});
   };
 
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
-      <Snackbar open={open.length != 0} autoHideDuration={3000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          {open}
+      <Snackbar open={open.opened} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={open.status} sx={{ width: '100%' }}>
+          {open.message}
         </Alert>
       </Snackbar>
     </Stack>

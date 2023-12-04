@@ -56,12 +56,12 @@ function Main() {
             return (
               <div key={index} className="flex items-center gap-5">
                 <img
-                  src="/biker 1.png"
-                  className="rounded-full bg-gega-white"
+                  src={`${member.image ? environment.apiUrl+'uploads/'+member.image : "/biker 1.png"}`}
+                  className="rounded-md bg-gega-white w-20 h-20 object-cover"
                   alt=""
                 />
                 <div>
-                  <p className="pb-2 text-[20px] font-medium">{member.type}</p>
+                  <p className="pb-2 text-[20px] font-medium">{member.type == 1 ? "Təqdimatçı" : "İzləyici"}</p>
                   <p>{member.name}</p>
                 </div>
               </div>

@@ -10,6 +10,12 @@ export enum UserType {
     VIEWER = 2,
 }
 
+export enum SnackbarStatus {
+    SUCCCESSFULL = "success",
+    UNSUCCESSFULL = "error",
+    EDIT = "info"
+}
+
 export interface Team {
     name: string;
     _id: number;
@@ -20,6 +26,13 @@ export interface TeamWithMembers {
     _id: string;
     teamMembers: {
         name: string;
-        type: string;
+        type: number | string;
+        image: string;
     }[];
+}
+
+export interface SnackbarInterface{
+    status: SnackbarStatus | null,
+    opened: boolean,
+    message: string
 }

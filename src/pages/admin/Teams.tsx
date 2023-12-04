@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { environment } from "../../environment/environment.prod";
 import { TEAM_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
-import { ApiMethods } from "../../interfaces/method";
+import { ApiMethods, SnackbarInterface, SnackbarStatus } from "../../interfaces/method";
 import {
   Table,
   TableBody,
@@ -19,7 +19,11 @@ import CustomizedSnackbars from "../../components/Snackbar";
 function Teams() {
   const [teams, setTeams] = useState<TeamWithMembers[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [alertOpen, setAlertOpen] = useState("");
+  const [snackbar, setSnackbar] = useState<SnackbarInterface>({
+    opened: false,
+    status: null,
+    message: "" 
+  });
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -31,7 +35,7 @@ function Teams() {
       fetchApi(ApiMethods.DELETE, undefined)
     )
       .then((res) => res.json())
-      .then((data) => data && setAlertOpen("Team remove successfully!"));
+      .then((data) => data && setSnackbar({opened: true, status: SnackbarStatus.SUCCCESSFULL, message: "Team remove successfully!"}));
   };
 
   useEffect(() => {
@@ -41,7 +45,7 @@ function Teams() {
     )
       .then((res) => res.json())
       .then((data) => setTeams(data));
-  }, [teams]);
+  }, []);
 
   return (
     <div>
@@ -72,18 +76,18 @@ function Teams() {
               {team.teamMembers.map((member, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <img src="/biker 1.png" alt="" width={30} height={30} />
+                    <img src={`${member.image ? environment.apiUrl+"uploads/"+member.image : "/biker 1.png"}`} alt="" width={30} height={30} />
                   </TableCell>
                   <TableCell>{member.name}</TableCell>
-                  <TableCell>{member.type}</TableCell>
+                  <TableCell>{member.type == 1 ? "Təqdimatçı" : "İzləyici"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       ))}
-      {alertOpen && (
-        <CustomizedSnackbars open={alertOpen} setOpen={setAlertOpen} />
+      {snackbar.opened && (
+        <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       )}
       <TeamDrawer open={isDrawerOpen} onClose={toggleDrawer} />
     </div>
