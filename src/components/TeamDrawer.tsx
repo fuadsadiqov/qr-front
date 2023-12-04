@@ -18,7 +18,7 @@ interface TeamDrawerProps {
 }
 
 export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState<any>("");
   const imageBase64: any = {
     base64Image: "",
   };
