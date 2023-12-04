@@ -1,30 +1,80 @@
-import React from "react";
+import { useState } from "react";
 import Dialog from "@mui/material/Dialog";
-import { useFormik } from "formik";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useFormik } from "formik";
+import { environment } from "../environment/environment.prod";
+import { fetchApi } from "../utils/fetch";
+import {
+  ApiMethods,
+  SnackbarInterface,
+  SnackbarStatus,
+} from "../interfaces/method";
+import { VOTER_URL } from "../constants/url";
+import CustomizedSnackbars from "./Snackbar";
 
 interface VoterModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (values: { voterId: number; name: string }) => void;
 }
 
-function VoterModal({ open, onClose, onSubmit }: VoterModalProps) {
+function VoterModal({ open, onClose }: VoterModalProps) {
+  const [snackbar, setSnackbar] = useState<SnackbarInterface>({
+    status: null,
+    opened: false,
+    message: "",
+  });
+
   const formik = useFormik({
     initialValues: {
-      voterId: null,
+      voterId: "",
       name: "",
     },
-    onSubmit: (values) => {
-      // onSubmit(values);
-      onClose();
+    onSubmit: (values, { resetForm }) => {
+      fetch(
+        environment.apiUrl + VOTER_URL.POST,
+        fetchApi(ApiMethods.POST, values)
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            setSnackbar({
+              opened: true,
+              status: SnackbarStatus.SUCCCESSFULL,
+              message: "Voter added successfully",
+            });
+            setTimeout(() => {
+              resetSnackbar();
+              onClose();
+              resetForm();
+            }, 2000);
+          }
+        });
     },
   });
 
+  const resetSnackbar = () => {
+    setSnackbar({
+      opened: false,
+      status: null,
+      message: "",
+    });
+  };
+
   return (
-    <Dialog open={open} onClose={onClose}>
-      <form onSubmit={formik.handleSubmit}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      sx={{
+        "& .MuiDialog-paper": {
+          width: "400px",
+          display: "flex",
+          padding: "60px",
+          gap: "10px",
+        },
+      }}
+    >
+      <form onSubmit={formik.handleSubmit} className="flex gap-5 flex-col">
         <TextField
           id="voterId"
           name="voterId"
@@ -39,8 +89,22 @@ function VoterModal({ open, onClose, onSubmit }: VoterModalProps) {
           onChange={formik.handleChange}
           value={formik.values.name}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" variant="contained">
+          Submit
+        </Button>
       </form>
+      <Button
+        type="submit"
+        variant="outlined"
+        onClick={() => {
+          onClose();
+        }}
+      >
+        Cancel
+      </Button>
+      {snackbar.opened && (
+        <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
+      )}
     </Dialog>
   );
 }
