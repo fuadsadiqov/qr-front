@@ -20,5 +20,5 @@ export const VOTER_URL = {
 }
 
 export const IMAGE_URL = {
-    POST: 'images'
+    POST: 'upload'
 }
