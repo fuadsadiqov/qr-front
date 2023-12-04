@@ -5,7 +5,7 @@ import { ApiMethods } from "../interfaces/method";
 import { IMAGE_URL, TEAM_URL } from "../constants/url";
 import { getBase64 } from "../helpers/getBase64";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { Formik, Form, Field, FieldArray } from "formik";
+import { Formik, Form, FieldArray } from "formik";
 import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import TextField from "@mui/material/TextField";
@@ -26,7 +26,7 @@ export default function TeamDrawer({ open, onClose }: TeamDrawerProps) {
   const onFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFileName(file.name);
+      setFileName(fileName => fileName = file.name);
       getBase64(file).then((data: any) => (imageBase64.base64Image = data));
       console.log(file.name);
     }
