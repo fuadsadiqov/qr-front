@@ -20,7 +20,6 @@ import Teams from '../pages/admin/Teams';
 import Voters from '../pages/admin/Voters';
 import Votes from '../pages/admin/Votes';
 import { Paper } from '@mui/material';
-import Orders from './Orders';
 
 const drawerWidth: number = 240;
 interface AppBarProps extends MuiAppBarProps {
