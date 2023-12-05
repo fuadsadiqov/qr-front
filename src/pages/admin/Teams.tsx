@@ -45,7 +45,7 @@ function Teams() {
           data &&
           setSnackbar({
             opened: true,
-            status: SnackbarStatus.SUCCCESSFULL,
+            status: SnackbarStatus.UNSUCCESSFULL,
             message: "Team remove successfully!",
           })
       );

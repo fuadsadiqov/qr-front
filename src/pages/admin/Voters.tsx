@@ -20,6 +20,7 @@ import VoterModal from "../../components/VoterModal";
 function Voters() {
   const [voters, setVoters] = useState<Voter[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newVoterFetching, setNewVoterFetching] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarInterface>({
     opened: false,
     status: null,
@@ -30,8 +31,6 @@ function Voters() {
     setIsModalOpen(!isModalOpen);
   };
 
-  
-
   const removeVoter = async (voterId: string) => {
     fetch(
       environment.apiUrl + VOTER_URL.DELETE(voterId),
@@ -40,12 +39,14 @@ function Voters() {
       .then((res) => res.json())
       .then(
         (data) =>
-          data &&
-          setSnackbar({
-            opened: true,
-            status: SnackbarStatus.SUCCCESSFULL,
-            message: "Voter remove successfully",
-          })
+          data && (
+            setNewVoterFetching(prevVoterFetching => prevVoterFetching = !prevVoterFetching),
+            setSnackbar({
+              opened: true,
+              status: SnackbarStatus.UNSUCCESSFULL,
+              message: "Voter removed successfully",
+            })
+          )
       );
   };
 
@@ -57,6 +58,15 @@ function Voters() {
       .then((res) => res.json())
       .then((data) => setVoters(data));
   }, []);
+
+  useEffect(() => {
+    fetch(
+      environment.apiUrl + VOTER_URL.GET,
+      fetchApi(ApiMethods.GET, undefined)
+    )
+      .then((res) => res.json())
+      .then((data) => setVoters(data));
+  }, [newVoterFetching]);
 
   return (
     <div>
@@ -73,18 +83,19 @@ function Voters() {
             <TableRow>
               <TableCell>Id</TableCell>
               <TableCell>Name</TableCell>
-              <TableCell>Option</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {voters.map((voter) => (
-              <TableRow key={voter.voterId}>
-                <TableCell>{voter.voterId}</TableCell>
+              <TableRow key={voter._id}>
+                <TableCell>{voter.pin}</TableCell>
                 <TableCell>{voter.name}</TableCell>
                 <TableCell>
                   <FaRegTrashAlt
+                    className="cursor-pointer hover:text-red-500 text-lg"
                     onClick={() => {
-                      removeVoter(voter.voterId);
+                      removeVoter(voter._id);
                     }}
                   />
                 </TableCell>
@@ -98,6 +109,7 @@ function Voters() {
         <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       )}
       <VoterModal
+        setChanges={setNewVoterFetching}
         open={isModalOpen}
         onClose={toggleModal}
       />

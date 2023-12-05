@@ -33,7 +33,7 @@ function Votes() {
 
   return (
     <div>
-      <p>Votes</p>
+      <h1 className="text-2xl font-medium">Votes</h1>
       <div className="border-1 p-3 rounded-md mt-5">
         <Table>
           <TableHead>

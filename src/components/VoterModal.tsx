@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -16,9 +16,10 @@ import CustomizedSnackbars from "./Snackbar";
 interface VoterModalProps {
   open: boolean;
   onClose: () => void;
+  setChanges: Dispatch<SetStateAction<boolean>>;
 }
 
-function VoterModal({ open, onClose }: VoterModalProps) {
+function VoterModal({ open, onClose, setChanges }: VoterModalProps) {
   const [snackbar, setSnackbar] = useState<SnackbarInterface>({
     status: null,
     opened: false,
@@ -27,7 +28,7 @@ function VoterModal({ open, onClose }: VoterModalProps) {
 
   const formik = useFormik({
     initialValues: {
-      voterId: "",
+      pin: "",
       name: "",
     },
     onSubmit: (values, { resetForm }) => {
@@ -38,9 +39,10 @@ function VoterModal({ open, onClose }: VoterModalProps) {
         .then((res) => res.json())
         .then((data) => {
           if (data) {
+            setChanges(prevChanges => !prevChanges)
             setSnackbar({
               opened: true,
-              status: SnackbarStatus.SUCCCESSFULL,
+              status: SnackbarStatus.SUCCESSFULL,
               message: "Voter added successfully",
             });
             setTimeout(() => {
@@ -76,11 +78,11 @@ function VoterModal({ open, onClose }: VoterModalProps) {
     >
       <form onSubmit={formik.handleSubmit} className="flex gap-5 flex-col">
         <TextField
-          id="voterId"
-          name="voterId"
+          id="pin"
+          name="pin"
           label="Voter ID"
           onChange={formik.handleChange}
-          value={formik.values.voterId}
+          value={formik.values.pin}
         />
         <TextField
           id="name"
