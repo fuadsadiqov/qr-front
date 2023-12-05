@@ -87,14 +87,14 @@ export default function TeamDrawer({
         if (data) {
           setSnackbar({
             opened: true,
-            status: SnackbarStatus.SUCCCESSFULL,
+            status: SnackbarStatus.SUCCESSFULL,
             message: "Team added successfully",
           });
           setNewTeamFetching(!newTeamFetching);
+          onClose();
           setTimeout(() => {
             resetSnackbar();
-            onClose();
-          }, 2000);
+          }, 1000);
         }
       });
   };

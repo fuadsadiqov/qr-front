@@ -11,7 +11,7 @@ export enum UserType {
 }
 
 export enum SnackbarStatus {
-  SUCCCESSFULL = "success",
+  SUCCESSFULL = "success",
   UNSUCCESSFULL = "error",
   EDIT = "info",
 }
@@ -22,8 +22,9 @@ export interface Team {
 }
 
 export interface Voter {
-  voterId: string;
+  _id: string;
   name: string;
+  pin?: string;
 }
 
 export interface TeamWithMembers {
