@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { environment } from "../../environment/environment.prod";
 import { VOTER_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
@@ -16,6 +16,7 @@ import { Voter } from "../../interfaces/method";
 import { SnackbarInterface } from "../../interfaces/method";
 import CustomizedSnackbars from "../../components/Snackbar";
 import VoterModal from "../../components/VoterModal";
+import SureDialog from "../../components/SureDialog";
 
 function Voters() {
   const [voters, setVoters] = useState<Voter[]>([]);
@@ -26,10 +27,27 @@ function Voters() {
     status: null,
     message: "",
   });
-
+  const [openDialog, setOpenDialog] = useState(false);
+  const [isDeleteConfirmed, setDeleteConfirmed] = useState(false);
+  const trashClickIdRef = useRef<string | null>(null);
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+  const toggleDialog = () => {
+    setOpenDialog(!openDialog);
+  };
+
+  const handleTrashClick = (id: string) => {
+    setOpenDialog(true);
+    trashClickIdRef.current = id;
+  };
+
+  useEffect(() => {
+    if (isDeleteConfirmed && trashClickIdRef.current) {
+      removeVoter(trashClickIdRef.current);
+      setDeleteConfirmed(false);
+    }
+  }, [isDeleteConfirmed, trashClickIdRef]);
 
   const removeVoter = async (voterId: string) => {
     fetch(
@@ -39,14 +57,15 @@ function Voters() {
       .then((res) => res.json())
       .then(
         (data) =>
-          data && (
-            setNewVoterFetching(prevVoterFetching => prevVoterFetching = !prevVoterFetching),
-            setSnackbar({
-              opened: true,
-              status: SnackbarStatus.UNSUCCESSFULL,
-              message: "Voter removed successfully",
-            })
-          )
+          data &&
+          (setNewVoterFetching(
+            (prevVoterFetching) => (prevVoterFetching = !prevVoterFetching)
+          ),
+          setSnackbar({
+            opened: true,
+            status: SnackbarStatus.UNSUCCESSFULL,
+            message: "Voter removed successfully",
+          }))
       );
   };
 
@@ -94,9 +113,7 @@ function Voters() {
                 <TableCell>
                   <FaRegTrashAlt
                     className="cursor-pointer hover:text-red-500 text-lg"
-                    onClick={() => {
-                      removeVoter(voter._id);
-                    }}
+                    onClick={() => handleTrashClick(voter._id)}
                   />
                 </TableCell>
               </TableRow>
@@ -112,6 +129,11 @@ function Voters() {
         setChanges={setNewVoterFetching}
         open={isModalOpen}
         onClose={toggleModal}
+      />
+      <SureDialog
+        open={openDialog}
+        handleClose={toggleDialog}
+        setDelete={setDeleteConfirmed}
       />
     </div>
   );

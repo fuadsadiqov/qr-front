@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { environment } from "../../environment/environment.prod";
 import { TEAM_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
@@ -19,6 +19,7 @@ import TeamDrawer from "../../components/TeamDrawer";
 import { TeamWithMembers } from "../../interfaces/method";
 import { FaRegTrashAlt } from "react-icons/fa";
 import CustomizedSnackbars from "../../components/Snackbar";
+import SureDialog from "../../components/SureDialog";
 
 function Teams() {
   const [teams, setTeams] = useState<TeamWithMembers[]>([]);
@@ -29,10 +30,29 @@ function Teams() {
     status: null,
     message: "",
   });
+  const [openDialog, setOpenDialog] = useState(false);
+  const [isDeleteConfirmed, setDeleteConfirmed] = useState(false);
+  const trashClickIdRef = useRef<string | null>(null);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
+
+  const toggleDialog = () => {
+    setOpenDialog(!openDialog);
+  };
+
+  const handleTrashClick = (id: string) => {
+    trashClickIdRef.current = id;
+    setOpenDialog(true);
+  };
+
+  useEffect(() => {
+    if (isDeleteConfirmed && trashClickIdRef.current) {
+      removeTeam(trashClickIdRef.current);
+      setDeleteConfirmed(false);
+    }
+  }, [isDeleteConfirmed, trashClickIdRef]);
 
   const removeTeam = async (teamId: string) => {
     fetch(
@@ -40,15 +60,16 @@ function Teams() {
       fetchApi(ApiMethods.DELETE, undefined)
     )
       .then((res) => res.json())
-      .then(
-        (data) =>
-          data &&
+      .then((data) => {
+        if (data) {
           setSnackbar({
             opened: true,
             status: SnackbarStatus.UNSUCCESSFULL,
-            message: "Team remove successfully!",
-          })
-      );
+            message: "Team removed successfully!",
+          });
+          setNewTeamFetching(!newTeamFetching);
+        }
+      });
   };
 
   useEffect(() => {
@@ -60,7 +81,6 @@ function Teams() {
       .then((data) => setTeams(data));
   }, [newTeamFetching]);
 
-  console.log(newTeamFetching);
   return (
     <div>
       <div className="flex w-full items-center justify-between">
@@ -75,10 +95,7 @@ function Teams() {
             <h4>{team.name}</h4>
             <FaRegTrashAlt
               className="text-xl cursor-pointer hover:text-red-500"
-              onClick={() => {
-                removeTeam(team._id);
-                setNewTeamFetching(!newTeamFetching);
-              }}
+              onClick={() => handleTrashClick(team._id)}
             />
           </div>
           <Table className="border-1 rounded-md">
@@ -122,6 +139,11 @@ function Teams() {
         onClose={toggleDrawer}
         setNewTeamFetching={setNewTeamFetching}
         newTeamFetching={newTeamFetching}
+      />
+      <SureDialog
+        open={openDialog}
+        handleClose={toggleDialog}
+        setDelete={setDeleteConfirmed}
       />
     </div>
   );
