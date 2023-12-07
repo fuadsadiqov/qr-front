@@ -7,7 +7,6 @@ import { environment } from "../environment/environment.prod";
 import { fetchApi } from "../utils/fetch";
 import { AUTH_URL } from "../constants/url";
 import { ApiMethods } from "../interfaces/method";
-import { Navigate } from "react-router-dom";
 
 function Pages() {
   const [isAuth, setIsAuth] = useState<boolean | null>(null);
@@ -36,7 +35,7 @@ function Pages() {
   return (
     <Routes>
       <Route path="/*" element={<Home />} />
-      <Route path="/admin/*" element={<Admin />} />
+      <Route path="/admin/*" element={isAuth ? <Admin /> : <Admin />} />
       <Route path="/login" element={<Login setisAuth={setIsAuth} />} />
     </Routes>
   );
