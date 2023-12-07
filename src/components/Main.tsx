@@ -47,6 +47,9 @@ function Main() {
           })
         }else{
           data && setOpen(true)
+          setTimeout(() => {
+            setOpen(false)
+          }, 3000);
         }
       })
       

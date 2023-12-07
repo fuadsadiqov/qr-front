@@ -66,7 +66,7 @@ function Votes() {
           ),
           setSnackbar({
             opened: true,
-            status: SnackbarStatus.UNSUCCESSFULL,
+            status: SnackbarStatus.SUCCESSFULL,
             message: "Voter removed successfully",
           }))
       );

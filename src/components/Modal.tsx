@@ -23,7 +23,7 @@ function Modal({ open, handleCloseAlert }: ModalProps) {
       <div
         style={{
           position: 'fixed',
-          top: '30%',
+          top: '35%',
           left: '50%',
           transform: 'translateX(-50%)',
           textAlign: 'center',

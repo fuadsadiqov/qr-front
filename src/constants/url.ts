@@ -22,3 +22,8 @@ export const VOTER_URL = {
 export const IMAGE_URL = {
     POST: 'upload'
 }
+
+export const AUTH_URL = {
+    POST: 'auth',
+    HAS_TOKEN: 'hasToken'
+}
