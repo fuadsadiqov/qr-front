@@ -5,6 +5,7 @@ import { TEAM_URL } from "../constants/url";
 import { ApiMethods } from "../interfaces/method";
 import { useNavigate } from "react-router-dom";
 import { Team } from '../interfaces/method'
+import { CircularProgress } from "@mui/material";
 
 
 function AllTeams() {
@@ -28,7 +29,7 @@ function AllTeams() {
           Komandalar
         </p>
         <div>
-          {teams?.map((team) => (
+          {teams.length ? teams.map((team) => (
             <div
               key={team._id}
               className="w-full bg-gega-main mt-6 flex justify-between items-center py-4 px-6 rounded-3xl"
@@ -41,7 +42,7 @@ function AllTeams() {
                 Səs verin
               </button>
             </div>
-          ))}
+          )) : <div className="flex justify-center"><CircularProgress color="info"/></div>}
         </div>
       </div>
     </div>

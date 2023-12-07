@@ -67,7 +67,7 @@ function Main() {
           Təqdimatçılar
         </p>
         <div className="w-full bg-gega-main py-5 rounded-lg flex md:justify-around md:flex-wrap md:flex-row flex-col justify-center items-center text-white max-md:gap-3">
-          {team.teamMembers ? team.teamMembers.map((member: any, index) => {
+          {team.teamMembers.length ? team.teamMembers.map((member: any, index) => {
             return (
               <div key={index} className="flex items-center md:pl-0 pl-10 md:w-max w-full gap-5">
                 <img
