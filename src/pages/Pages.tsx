@@ -36,7 +36,7 @@ function Pages() {
   return (
     <Routes>
       <Route path="/*" element={<Home />} />
-      <Route path="/admin/*" element={isAuth === true ? <Admin /> : <Navigate to="/login" />} />
+      <Route path="/admin/*" element={<Admin />} />
       <Route path="/login" element={<Login setisAuth={setIsAuth} />} />
     </Routes>
   );
