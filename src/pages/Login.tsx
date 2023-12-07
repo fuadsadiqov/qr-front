@@ -10,17 +10,25 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { SnackbarStatus } from "../interfaces/method";
+import { ApiMethods, SnackbarStatus } from "../interfaces/method";
 import CustomizedSnackbars from "../components/Snackbar";
+import { environment } from "../environment/environment.prod";
+import { AUTH_URL } from "../constants/url";
+import { fetchApi } from "../utils/fetch";
+import { useNavigate } from 'react-router-dom';
 
-const Login: React.FC = () => {
+interface LoginProps {
+  setisAuth: React.Dispatch<React.SetStateAction<boolean | null>>;
+}
+
+const Login: React.FC<LoginProps> = ({setisAuth}) => {
   const [form, setForm] = useState({
     login: "",
     password: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [snackbar, setSnackbar] = useState<any>(false);
-
+  const navigate = useNavigate();
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (
@@ -31,20 +39,25 @@ const Login: React.FC = () => {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log();
-
-    if (import.meta.env.VITE_LOGIN == form.login && import.meta.env.VITE_PASSWORD == form.password) {
-      console.log("Successfull");
-      const encodedValue = encodeURIComponent(form.password)
-      console.log(encodedValue);
-      
-    } else {
-      setSnackbar({
-        opened: true,
-        status: SnackbarStatus.UNSUCCESSFULL,
-        message: "Incorrect username or password",
+    fetch(environment.apiUrl + AUTH_URL.POST, fetchApi(ApiMethods.POST, form))
+      .then(res => res.json())
+      .then(data => {
+        if(data.token){
+          sessionStorage.setItem('token', data.token)
+          setisAuth(true)
+          navigate('/admin')
+        }        
+        else if (data.error) {
+          setSnackbar({
+            opened: true,
+            status: SnackbarStatus.UNSUCCESSFULL,
+            message: "Incorrect username or password",
+          })
+        }
       })
-    }
+      .catch(error => {
+        console.error(error)
+      })
   };
 
   return (
