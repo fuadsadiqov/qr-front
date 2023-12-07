@@ -9,6 +9,7 @@ import {
   TableRow,
   TableCell,
   TableHead,
+  TextField,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -30,6 +31,7 @@ function Voters() {
   const [openDialog, setOpenDialog] = useState(false);
   const [isDeleteConfirmed, setDeleteConfirmed] = useState(false);
   const trashClickIdRef = useRef<string | null>(null);
+  const [searchValue, setSearchValue] = useState("");
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
@@ -87,13 +89,37 @@ function Voters() {
       .then((data) => setVoters(data));
   }, [newVoterFetching]);
 
+  const filteredVoters = voters.filter((voter) => {
+    const pinIncludes = voter.pin
+      .toLocaleLowerCase()
+      .includes(searchValue.toLocaleLowerCase());
+    const nameIncludes = voter.name
+      .toLowerCase()
+      .includes(searchValue.toLowerCase());
+    return pinIncludes || nameIncludes;
+  });
+
   return (
     <div>
       <div className="flex w-full items-center justify-between">
         <h1 className="text-2xl font-medium">Voters</h1>
-        <Button variant="contained" onClick={toggleModal}>
-          Add Voter
-        </Button>
+        <div className="flex items-center justify-center gap-4">
+          <TextField
+            id="pin"
+            name="pin"
+            label="Search voter"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            sx={{ height: "48px" }}
+          />
+          <Button
+            variant="contained"
+            onClick={toggleModal}
+            sx={{ height: "48px" }}
+          >
+            Add Voter
+          </Button>
+        </div>
       </div>
 
       <div className="mt-10 p-3">
@@ -106,7 +132,7 @@ function Voters() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {voters.map((voter) => (
+            {filteredVoters.map((voter) => (
               <TableRow key={voter._id}>
                 <TableCell>{voter.pin}</TableCell>
                 <TableCell>{voter.name}</TableCell>

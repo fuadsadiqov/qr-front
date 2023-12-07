@@ -13,6 +13,7 @@ import {
   TableCell,
   TableRow,
   TableBody,
+  TextField,
 } from "@mui/material";
 
 interface Vote {
@@ -28,6 +29,7 @@ function Votes() {
   const [isDeleteConfirmed, setDeleteConfirmed] = useState(false);
   const [newVoteFetching, setNewVoteFetching] = useState(false);
   const trashClickIdRef = useRef<string | null>(null);
+  const [searchValue, setSearchValue] = useState("");
   const [snackbar, setSnackbar] = useState<SnackbarInterface>({
     opened: false,
     status: null,
@@ -79,9 +81,31 @@ function Votes() {
       .then((data) => setVotes(data));
   }, [newVoteFetching]);
 
+  const filteredVotes = votes.filter((vote) => {
+    const voterIdIncludes = vote.voterId
+      .toLocaleLowerCase()
+      .includes(searchValue.toLocaleLowerCase());
+    const teamIdIncludes = vote.teamId
+      .toLowerCase()
+      .includes(searchValue.toLowerCase());
+    const ratingIncludes = vote.rating.toString().includes(searchValue);
+    return voterIdIncludes || teamIdIncludes || ratingIncludes;
+  });
+
   return (
     <div>
-      <h1 className="text-2xl font-medium">Votes</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-medium">Votes</h1>
+        <TextField
+          id="pin"
+          name="pin"
+          label="Search voter"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          sx={{ height: "48px" }}
+        />
+      </div>
+
       <div className="border-1 p-3 rounded-md mt-5">
         <Table>
           <TableHead>
@@ -94,7 +118,7 @@ function Votes() {
           </TableHead>
           <TableBody>
             {votes !== undefined &&
-              votes.map((vote) => (
+              filteredVotes.map((vote) => (
                 <TableRow key={vote._id}>
                   <TableCell>{vote.voterId}</TableCell>
                   <TableCell>{vote.teamId}</TableCell>
