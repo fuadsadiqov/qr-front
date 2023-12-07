@@ -64,7 +64,7 @@ function Teams() {
         if (data) {
           setSnackbar({
             opened: true,
-            status: SnackbarStatus.UNSUCCESSFULL,
+            status: SnackbarStatus.SUCCESSFULL,
             message: "Team removed successfully!",
           });
           setNewTeamFetching(!newTeamFetching);
