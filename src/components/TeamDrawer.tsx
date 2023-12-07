@@ -14,7 +14,7 @@ import { Formik, Form, FieldArray } from "formik";
 import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import TextField from "@mui/material/TextField";
-import { Input, MenuItem, Select } from "@mui/material";
+import { Input } from "@mui/material";
 import { IoMdClose } from "react-icons/io";
 import CustomizedSnackbars from "./Snackbar";
 
@@ -109,7 +109,7 @@ export default function TeamDrawer({
         <Formik
           initialValues={{
             name: "",
-            teamMembers: [{ name: "", type: UserType.VIEWER, image: "" }],
+            teamMembers: [{ name: "", type: UserType.PRESENTER, image: "" }],
           }}
           onSubmit={handleSubmit}
         >
@@ -135,7 +135,7 @@ export default function TeamDrawer({
                           value={member.name}
                           onChange={handleChange}
                         />
-                        <Select
+                        {/* <Select
                           required
                           label={`Member Type`}
                           name={`teamMembers.${index}.type`}
@@ -146,7 +146,7 @@ export default function TeamDrawer({
                           <MenuItem value={UserType.PRESENTER}>
                             Presenter
                           </MenuItem>
-                        </Select>
+                        </Select> */}
                         <Input
                           onChange={async (e: any) => {
                             try {
