@@ -5,7 +5,7 @@ import { ApiMethods, SnackbarStatus } from "../interfaces/method";
 import { TEAM_URL, VOTE_URL } from "../constants/url";
 import { useParams } from "react-router-dom";
 import Modal from "./Modal";
-import { CircularProgress, Snackbar } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import CustomizedSnackbars from "./Snackbar";
 
 function Main() {
@@ -58,7 +58,7 @@ function Main() {
       fetchApi(ApiMethods.GET, undefined)
     )
       .then((res) => res.json())
-      .then((data) => setTeam(prevTeam => prevTeam = data));
+      .then((data) => setTeam(data));
   }, [id]);
   return (
     <div className="p-[64px] max-md:p-[20px]">
