@@ -123,7 +123,7 @@ function Main() {
             Təsdiq edin
           </button>
         </div>
-        {open && <Modal handleCloseAlert={handleCloseAlert}/>}
+        <Modal handleCloseAlert={handleCloseAlert} open={open}/>
         {snackbar && <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />}
       </div>
     </div>
