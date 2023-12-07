@@ -24,7 +24,7 @@ export interface Team {
 export interface Voter {
   _id: string;
   name: string;
-  pin?: string;
+  pin: string;
 }
 
 export interface TeamWithMembers {
