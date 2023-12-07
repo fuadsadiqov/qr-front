@@ -66,10 +66,10 @@ function Main() {
         <p className="font-Inter text-gega-main text-[25px] font-semibold mb-5">
           Təqdimatçılar
         </p>
-        <div className="w-full bg-gega-main py-5 rounded-lg flex justify-around items-center flex-wrap text-white max-md:gap-3">
+        <div className="w-full bg-gega-main py-5 rounded-lg flex md:justify-around md:flex-wrap md:flex-row flex-col justify-center items-center text-white max-md:gap-3">
           {team.teamMembers ? team.teamMembers.map((member: any, index) => {
             return (
-              <div key={index} className="flex items-center gap-5">
+              <div key={index} className="flex items-center md:pl-0 pl-10 md:w-max w-full gap-5">
                 <img
                   src={`${member.image ? environment.apiUrl+'uploads/'+member.image : "/biker 1.png"}`}
                   className="rounded-md bg-gega-white w-20 h-20 object-cover"
