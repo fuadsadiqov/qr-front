@@ -14,6 +14,7 @@ import {
   TableRow,
   TableBody,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 
 interface Vote {
@@ -107,6 +108,7 @@ function Votes() {
       </div>
 
       <div className="border-1 p-3 rounded-md mt-5">
+        {votes.length ? (
         <Table>
           <TableHead>
             <TableRow>
@@ -133,6 +135,7 @@ function Votes() {
               ))}
           </TableBody>
         </Table>
+        ) : <div className="flex justify-center"><CircularProgress color="info"/></div>}
       </div>
       <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       <SureDialog

@@ -12,6 +12,7 @@ import {
 } from "../interfaces/method";
 import { VOTER_URL } from "../constants/url";
 import CustomizedSnackbars from "./Snackbar";
+import { CircularProgress } from "@mui/material";
 
 interface VoterModalProps {
   open: boolean;
@@ -51,7 +52,7 @@ function VoterModal({ open, onClose, setChanges }: VoterModalProps) {
               resetForm();
             }, 2000);
           }
-        });
+        })
     },
   });
 
@@ -91,8 +92,8 @@ function VoterModal({ open, onClose, setChanges }: VoterModalProps) {
           onChange={formik.handleChange}
           value={formik.values.name}
         />
-        <Button type="submit" variant="contained">
-          Submit
+        <Button  type="submit" variant="contained">
+        Submit
         </Button>
       </form>
       <Button
