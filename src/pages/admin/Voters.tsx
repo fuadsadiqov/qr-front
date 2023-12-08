@@ -10,6 +10,7 @@ import {
   TableCell,
   TableHead,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -123,7 +124,8 @@ function Voters() {
       </div>
 
       <div className="mt-10 p-3">
-        <Table className="border-1 rounded-md">
+        {filteredVoters.length ? (
+          <Table className="border-1 rounded-md">
           <TableHead>
             <TableRow>
               <TableCell>Id</TableCell>
@@ -145,7 +147,7 @@ function Voters() {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </Table>) : <div className="flex justify-center"><CircularProgress color="info"/></div>}
       </div>
 
       {snackbar.opened && (

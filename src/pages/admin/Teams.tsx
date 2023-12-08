@@ -13,6 +13,7 @@ import {
   TableRow,
   TableCell,
   TableHead,
+  CircularProgress,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import TeamDrawer from "../../components/TeamDrawer";
@@ -89,7 +90,7 @@ function Teams() {
           Add team
         </Button>
       </div>
-      {teams.map((team) => (
+      {teams.length ? teams.map((team) => (
         <div key={team._id} className="mt-10 p-3">
           <div className="flex items-center justify-between mb-2">
             <h4>{team.name}</h4>
@@ -130,7 +131,7 @@ function Teams() {
             </TableBody>
           </Table>
         </div>
-      ))}
+      )) : <div className="flex justify-center"><CircularProgress color="info"/></div>}
       {snackbar.opened && (
         <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       )}
