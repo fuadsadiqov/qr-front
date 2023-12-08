@@ -12,7 +12,6 @@ import {
 } from "../interfaces/method";
 import { VOTER_URL } from "../constants/url";
 import CustomizedSnackbars from "./Snackbar";
-import { CircularProgress } from "@mui/material";
 
 interface VoterModalProps {
   open: boolean;
