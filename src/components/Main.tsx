@@ -127,7 +127,7 @@ function Main() {
           </button>
         </div>
         <Modal handleCloseAlert={handleCloseAlert} open={open}/>
-        {snackbar && <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />}
+        <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       </div>
     </div>
   );

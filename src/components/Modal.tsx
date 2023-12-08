@@ -20,15 +20,7 @@ const CustomPaper = (props: any) => (
 function Modal({ open, handleCloseAlert }: ModalProps) {
   return (
     <Dialog open={open} onClose={handleCloseAlert} PaperComponent={CustomPaper}>
-      <div
-        style={{
-          position: 'fixed',
-          top: '35%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          textAlign: 'center',
-        }}
-      >
+      <div>
         <Checkmark size="large" color="#0E9003" className="text-white" />
       </div>
       <DialogTitle style={{ color: 'white', marginTop: '10px', textAlign: 'center' }}>
