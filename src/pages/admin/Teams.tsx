@@ -21,9 +21,12 @@ import { TeamWithMembers } from "../../interfaces/method";
 import { FaRegTrashAlt } from "react-icons/fa";
 import CustomizedSnackbars from "../../components/Snackbar";
 import SureDialog from "../../components/SureDialog";
+import QRModal from "../../components/QR-modal";
+import { QRModalInterface } from "../../interfaces/method";
 
 function Teams() {
   const [teams, setTeams] = useState<TeamWithMembers[]>([]);
+  const [qrModalOpen, setQrModalOpen] = useState<QRModalInterface>({open: false, value: ""});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [newTeamFetching, setNewTeamFetching] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarInterface>({
@@ -73,6 +76,16 @@ function Teams() {
       });
   };
 
+  const createQR = (id: string) => {
+    const url = window.location.origin + '/teamId/' + id;
+    console.log(url);
+    
+    setQrModalOpen({
+      open: true,
+      value: url
+    })
+  }
+
   useEffect(() => {
     fetch(
       environment.apiUrl + TEAM_URL.GET,
@@ -94,10 +107,13 @@ function Teams() {
         <div key={team._id} className="mt-10 p-3">
           <div className="flex items-center justify-between mb-2">
             <h4>{team.name}</h4>
+            <div className="flex gap-2 items-center">
+            <img onClick={() => createQR(team._id)} width={35} src="/qr-icon.svg" className="cursor-pointer" alt="QR icon" title="Create QR" />
             <FaRegTrashAlt
               className="text-xl cursor-pointer hover:text-red-500"
               onClick={() => handleTrashClick(team._id)}
             />
+            </div>
           </div>
           <Table className="border-1 rounded-md">
             <TableHead>
@@ -135,6 +151,7 @@ function Teams() {
       {snackbar.opened && (
         <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       )}
+      <QRModal open={qrModalOpen} onClose={() => setQrModalOpen({open: false, value: ""})}/>
       <TeamDrawer
         open={isDrawerOpen}
         onClose={toggleDrawer}
