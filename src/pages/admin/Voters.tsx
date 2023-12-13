@@ -127,7 +127,7 @@ function Voters() {
         </div>
       </div>
 
-      <div style={{ height: 400, width: "100%", marginTop: "20px" }}>
+      <div style={{ height: 'auto', width: "100%", marginTop: "20px" }}>
         {voters.length ? (
           <DataGrid
             rows={rows}
