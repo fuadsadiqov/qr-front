@@ -27,3 +27,7 @@ export const AUTH_URL = {
     POST: 'auth',
     HAS_TOKEN: 'hasToken'
 }
+
+export const DASHBOARD_URL = {
+    GET: 'dashboard'
+}

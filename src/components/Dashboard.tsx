@@ -20,6 +20,7 @@ import Teams from '../pages/admin/Teams';
 import Voters from '../pages/admin/Voters';
 import Votes from '../pages/admin/Votes';
 import { Paper } from '@mui/material';
+import DashboardItem from '../pages/admin/DashboardItem';
 
 const drawerWidth: number = 240;
 interface AppBarProps extends MuiAppBarProps {
@@ -150,7 +151,7 @@ export default function Dashboard() {
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
               <Routes>
-                <Route path="" element={<Teams />}/>
+                <Route path="" element={<DashboardItem />}/>
                 <Route path="teams" element={<Teams />} />
                 <Route path="voters" element={<Voters />} />
                 <Route path="votes" element={<Votes />} />

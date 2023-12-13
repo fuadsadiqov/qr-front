@@ -21,6 +21,7 @@ interface Vote {
   _id: string;
   voterId: string;
   teamId: string;
+  teamName: string;
   rating: number;
 }
 
@@ -112,18 +113,20 @@ function Votes() {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell></TableCell>
               <TableCell>Voter id</TableCell>
-              <TableCell>Team id</TableCell>
+              <TableCell>Team name</TableCell>
               <TableCell>Rating</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {votes !== undefined &&
-              filteredVotes.map((vote) => (
+              filteredVotes.map((vote, index) => (
                 <TableRow key={vote._id}>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{vote.voterId}</TableCell>
-                  <TableCell>{vote.teamId}</TableCell>
+                  <TableCell>{vote.teamName}</TableCell>
                   <TableCell>{vote.rating}</TableCell>
                   <TableCell>
                     <FaRegTrashAlt

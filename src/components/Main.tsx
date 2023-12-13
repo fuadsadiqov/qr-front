@@ -34,7 +34,8 @@ function Main() {
     let sendVoteBody = {
       voterId: pin,
       rating: selectedNumber,
-      teamId: team.name
+      teamId: id,
+      teamName: team.name
     }
     fetch(environment.apiUrl + VOTE_URL.POST, fetchApi(ApiMethods.POST, sendVoteBody))
       .then(res => res.json())
