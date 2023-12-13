@@ -1,3 +1,5 @@
+import { Button } from "@mui/material";
+import { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
 export interface BarChartInterface {
@@ -6,6 +8,7 @@ export interface BarChartInterface {
 }
 
 export default function BarChart({ data, labels }: BarChartInterface) {
+  const [horizontal, setHorizontal] = useState(false);
   const barChartData: any = {
     series: [{
       data: data,
@@ -18,7 +21,7 @@ export default function BarChart({ data, labels }: BarChartInterface) {
       plotOptions: {
         bar: {
           borderRadius: 4,
-          horizontal: false,
+          horizontal: horizontal,
         },
       },
       dataLabels: {
@@ -28,12 +31,18 @@ export default function BarChart({ data, labels }: BarChartInterface) {
         }
       },
       xaxis: {
-        categories: labels
+        categories: labels,
+        labels: {
+          style: {
+            fontSize: "15"
+          }
+        }
       },
     },
   };
   return (
     <div id="chart">
+      <Button variant="outlined" onClick={() => setHorizontal(!horizontal)}>{horizontal ? "Horizontal" : "Vertical"}</Button>
       <ReactApexChart options={barChartData.options} series={barChartData.series} type="bar" height={350} />
     </div>
   );
