@@ -87,7 +87,7 @@ function Votes() {
     const voterIdIncludes = vote.voterId
       .toLocaleLowerCase()
       .includes(searchValue.toLocaleLowerCase());
-    const teamIdIncludes = vote.teamId
+    const teamIdIncludes = vote.teamName
       .toLowerCase()
       .includes(searchValue.toLowerCase());
     const ratingIncludes = vote.rating.toString().includes(searchValue);

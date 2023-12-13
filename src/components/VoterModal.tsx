@@ -78,21 +78,21 @@ function VoterModal({ open, onClose, setChanges }: VoterModalProps) {
     >
       <form onSubmit={formik.handleSubmit} className="flex gap-5 flex-col">
         <TextField
-          id="pin"
-          name="pin"
-          label="Voter ID"
-          onChange={formik.handleChange}
-          value={formik.values.pin}
-        />
-        <TextField
           id="name"
           name="name"
           label="Name"
           onChange={formik.handleChange}
           value={formik.values.name}
         />
-        <Button  type="submit" variant="contained">
-        Submit
+        <TextField
+          id="pin"
+          name="pin"
+          label="PIN"
+          onChange={formik.handleChange}
+          value={formik.values.pin}
+        />
+        <Button type="submit" variant="contained">
+          Submit
         </Button>
       </form>
       <Button
