@@ -15,7 +15,7 @@ export default function DashboardItem(){
         .then(res => res.json())
         .then(data => {
           if (data.message) {
-            const newRatingData = data.message.map((rating: any) => parseFloat(rating.averageRating).toFixed(1));
+            const newRatingData = data.message.map((rating: any) => parseFloat(rating.averageRating).toFixed(3));
             const newCategories = data.message.map((rating: any) => rating.teamName);
             setRatingData(newRatingData);
             setCategories(newCategories);
