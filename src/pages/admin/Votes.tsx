@@ -7,15 +7,9 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import SureDialog from "../../components/SureDialog";
 import { SnackbarInterface } from "../../interfaces/method";
 import CustomizedSnackbars from "../../components/Snackbar";
-import {
-  Table,
-  TableHead,
-  TableCell,
-  TableRow,
-  TableBody,
-  TextField,
-  CircularProgress,
-} from "@mui/material";
+
+import { DataGrid } from "@mui/x-data-grid";
+import { TextField, CircularProgress } from "@mui/material";
 
 interface Vote {
   _id: string;
@@ -37,6 +31,7 @@ function Votes() {
     status: null,
     message: "",
   });
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const toggleDialog = () => {
     setOpenDialog(!openDialog);
@@ -63,9 +58,7 @@ function Votes() {
       .then(
         (data) =>
           data &&
-          (setNewVoteFetching(
-            (prevVoteFetching) => (prevVoteFetching = !prevVoteFetching)
-          ),
+          (setNewVoteFetching((prevVoteFetching) => !prevVoteFetching),
           setSnackbar({
             opened: true,
             status: SnackbarStatus.SUCCESSFULL,
@@ -83,6 +76,24 @@ function Votes() {
       .then((data) => setVotes(data));
   }, [newVoteFetching]);
 
+  const columns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "voterId", headerName: "Voter ID", flex: 1 },
+    { field: "teamName", headerName: "Team Name", flex: 1 },
+    { field: "rating", headerName: "Rating", width: 100 },
+    {
+      field: "actions",
+      headerName: "Action",
+      sortable: false,
+      width: 100,
+      renderCell: (params: any) => (
+        <FaRegTrashAlt
+          className="cursor-pointer hover:text-red-500 text-lg"
+          onClick={() => handleTrashClick(params.row._id)}
+        />
+      ),
+    },
+  ];
   const filteredVotes = votes.filter((vote) => {
     const voterIdIncludes = vote.voterId
       .toLocaleLowerCase()
@@ -93,52 +104,50 @@ function Votes() {
     const ratingIncludes = vote.rating.toString().includes(searchValue);
     return voterIdIncludes || teamIdIncludes || ratingIncludes;
   });
+  const rows = filteredVotes.map((vote, index) => ({ id: index + 1, ...vote }));
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-medium">Votes</h1>
-        <TextField
-          id="pin"
-          name="pin"
-          label="Search voter"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          sx={{ height: "48px" }}
-        />
+        <div className="flex items-center justify-center gap-3">
+          {selectedIds.length >= 1 && (
+            <FaRegTrashAlt className="cursor-pointer hover:text-red-500 text-lg" />
+          )}
+          <TextField
+            id="pin"
+            name="pin"
+            label="Search voter"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            sx={{ height: "48px" }}
+          />
+        </div>
       </div>
 
-      <div className="border-1 p-3 rounded-md mt-5">
+      <div style={{ height: 400, width: "100%", marginTop: "20px" }}>
         {votes.length ? (
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell></TableCell>
-              <TableCell>Voter id</TableCell>
-              <TableCell>Team name</TableCell>
-              <TableCell>Rating</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {votes !== undefined &&
-              filteredVotes.map((vote, index) => (
-                <TableRow key={vote._id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{vote.voterId}</TableCell>
-                  <TableCell>{vote.teamName}</TableCell>
-                  <TableCell>{vote.rating}</TableCell>
-                  <TableCell>
-                    <FaRegTrashAlt
-                      className="cursor-pointer hover:text-red-500 text-lg"
-                      onClick={() => handleTrashClick(vote._id)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        ) : <div className="flex justify-center"><CircularProgress color="info"/></div>}
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 6,
+                },
+              },
+            }}
+            checkboxSelection
+            onRowSelectionModelChange={(id: any) => {
+              setSelectedIds(id);
+            }}
+            rowSelectionModel={selectedIds}
+          />
+        ) : (
+          <div className="flex justify-center">
+            <CircularProgress color="info" />
+          </div>
+        )}
       </div>
       <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       <SureDialog
