@@ -26,7 +26,11 @@ import { QRModalInterface } from "../../interfaces/method";
 
 function Teams() {
   const [teams, setTeams] = useState<TeamWithMembers[]>([]);
-  const [qrModalOpen, setQrModalOpen] = useState<QRModalInterface>({open: false, value: ""});
+  const [qrModalOpen, setQrModalOpen] = useState<QRModalInterface>({
+    open: false,
+    value: "",
+    name: "",
+  });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [newTeamFetching, setNewTeamFetching] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarInterface>({
@@ -76,15 +80,17 @@ function Teams() {
       });
   };
 
-  const createQR = (id: string) => {
-    const url = window.location.origin + '/teamId/' + id;
+  const createQR = ({ id, name }: { id: string; name: string }) => {
+    const url = window.location.origin + "/teamId/" + id;
     console.log(url);
-    
+    console.log(name);
+
     setQrModalOpen({
       open: true,
-      value: url
-    })
-  }
+      value: url,
+      name: name,
+    });
+  };
 
   useEffect(() => {
     fetch(
@@ -103,55 +109,71 @@ function Teams() {
           Add team
         </Button>
       </div>
-      {teams.length ? teams.map((team) => (
-        <div key={team._id} className="mt-10 p-3">
-          <div className="flex items-center justify-between mb-2">
-            <h4>{team.name}</h4>
-            <div className="flex gap-2 items-center">
-            <img onClick={() => createQR(team._id)} width={35} src="/qr-icon.svg" className="cursor-pointer" alt="QR icon" title="Create QR" />
-            <FaRegTrashAlt
-              className="text-xl cursor-pointer hover:text-red-500"
-              onClick={() => handleTrashClick(team._id)}
-            />
+      {teams.length ? (
+        teams.map((team) => (
+          <div key={team._id} className="mt-10 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h4>{team.name}</h4>
+              <div className="flex gap-2 items-center">
+                <img
+                  onClick={() => createQR({ id: team._id, name: team.name })}
+                  width={35}
+                  src="/qr-icon.svg"
+                  className="cursor-pointer"
+                  alt="QR icon"
+                  title="Create QR"
+                />
+                <FaRegTrashAlt
+                  className="text-xl cursor-pointer hover:text-red-500"
+                  onClick={() => handleTrashClick(team._id)}
+                />
+              </div>
             </div>
-          </div>
-          <Table className="border-1 rounded-md">
-            <TableHead>
-              <TableRow>
-                <TableCell>Image</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Type</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {team.teamMembers.map((member, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <img
-                      src={`${
-                        member.image
-                          ? environment.apiUrl + "uploads/" + member.image
-                          : "/biker 1.png"
-                      }`}
-                      alt=""
-                      width={30}
-                      height={30}
-                    />
-                  </TableCell>
-                  <TableCell>{member.name}</TableCell>
-                  <TableCell>
-                    {member.type == 1 ? "Təqdimatçı" : "İzləyici"}
-                  </TableCell>
+            <Table className="border-1 rounded-md">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Image</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Type</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {team.teamMembers.map((member, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <img
+                        src={`${
+                          member.image
+                            ? environment.apiUrl + "uploads/" + member.image
+                            : "/biker 1.png"
+                        }`}
+                        alt=""
+                        width={30}
+                        height={30}
+                      />
+                    </TableCell>
+                    <TableCell>{member.name}</TableCell>
+                    <TableCell>
+                      {member.type == 1 ? "Təqdimatçı" : "İzləyici"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ))
+      ) : (
+        <div className="flex justify-center">
+          <CircularProgress color="info" />
         </div>
-      )) : <div className="flex justify-center"><CircularProgress color="info"/></div>}
+      )}
       {snackbar.opened && (
         <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
       )}
-      <QRModal open={qrModalOpen} onClose={() => setQrModalOpen({open: false, value: ""})}/>
+      <QRModal
+        open={qrModalOpen}
+        onClose={() => setQrModalOpen({ open: false, value: "", name: "" })}
+      />
       <TeamDrawer
         open={isDrawerOpen}
         onClose={toggleDrawer}

@@ -5,7 +5,7 @@ interface SureDialogProps {
   open: boolean;
   handleClose: () => void;
   setDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedIds: string[];
+  selectedIds?: string[];
 }
 
 const SureDialog: React.FC<SureDialogProps> = ({
@@ -56,9 +56,9 @@ const SureDialog: React.FC<SureDialogProps> = ({
             clipRule="evenodd"
           ></path>
         </svg>
-        {selectedIds.length > 1 ? (
+        {selectedIds && selectedIds?.length > 1 ? (
           <p className="mb-4 text-gray-800">
-            Are you sure you want to delete {selectedIds.length} items?
+            Are you sure you want to delete {selectedIds?.length} items?
           </p>
         ) : (
           <p className="mb-4 text-gray-800">
