@@ -137,6 +137,7 @@ function Votes() {
                 },
               },
             }}
+            pageSizeOptions={[6, 10, 20]}
             checkboxSelection
             onRowSelectionModelChange={(id: any) => {
               setSelectedIds(id);
