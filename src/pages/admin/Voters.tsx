@@ -1,24 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { environment } from "../../environment/environment.prod";
 import { VOTER_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
 import { ApiMethods, SnackbarStatus } from "../../interfaces/method";
-import {
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHead,
-  TextField,
-  CircularProgress,
-} from "@mui/material";
-import Button from "@mui/material/Button";
+import { CircularProgress, Button, TextField } from "@mui/material";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { Voter } from "../../interfaces/method";
 import { SnackbarInterface } from "../../interfaces/method";
 import CustomizedSnackbars from "../../components/Snackbar";
 import VoterModal from "../../components/VoterModal";
 import SureDialog from "../../components/SureDialog";
+import { DataGrid } from "@mui/x-data-grid";
 
 function Voters() {
   const [voters, setVoters] = useState<Voter[]>([]);
@@ -33,9 +25,12 @@ function Voters() {
   const [isDeleteConfirmed, setDeleteConfirmed] = useState(false);
   const trashClickIdRef = useRef<string | null>(null);
   const [searchValue, setSearchValue] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
   const toggleDialog = () => {
     setOpenDialog(!openDialog);
   };
@@ -60,15 +55,7 @@ function Voters() {
       .then((res) => res.json())
       .then(
         (data) =>
-          data &&
-          (setNewVoterFetching(
-            (prevVoterFetching) => (prevVoterFetching = !prevVoterFetching)
-          ),
-          setSnackbar({
-            opened: true,
-            status: SnackbarStatus.UNSUCCESSFULL,
-            message: "Voter removed successfully",
-          }))
+          data && setNewVoterFetching((prevVoterFetching) => !prevVoterFetching)
       );
   };
 
@@ -79,17 +66,25 @@ function Voters() {
     )
       .then((res) => res.json())
       .then((data) => setVoters(data));
-  }, []);
-
-  useEffect(() => {
-    fetch(
-      environment.apiUrl + VOTER_URL.GET,
-      fetchApi(ApiMethods.GET, undefined)
-    )
-      .then((res) => res.json())
-      .then((data) => setVoters(data));
   }, [newVoterFetching]);
 
+  const columns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "pin", headerName: "Pin", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      sortable: false,
+      width: 150,
+      renderCell: (params: any) => (
+        <FaRegTrashAlt
+          className="cursor-pointer hover:text-red-500 text-lg"
+          onClick={() => handleTrashClick(params.row._id)}
+        />
+      ),
+    },
+  ];
   const filteredVoters = voters.filter((voter) => {
     const pinIncludes = voter.pin
       .toLocaleLowerCase()
@@ -100,11 +95,20 @@ function Voters() {
     return pinIncludes || nameIncludes;
   });
 
+  const rows = filteredVoters.map((voter, index) => ({
+    id: index + 1,
+    ...voter,
+  }));
+
+
   return (
     <div>
       <div className="flex w-full items-center justify-between">
         <h1 className="text-2xl font-medium">Voters</h1>
         <div className="flex items-center justify-center gap-4">
+          {selectedIds.length >= 1 && (
+            <FaRegTrashAlt className="cursor-pointer hover:text-red-500 text-lg" />
+          )}
           <TextField
             id="pin"
             name="pin"
@@ -123,31 +127,30 @@ function Voters() {
         </div>
       </div>
 
-      <div className="mt-10 p-3">
-        {filteredVoters.length ? (
-          <Table className="border-1 rounded-md">
-          <TableHead>
-            <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredVoters.map((voter) => (
-              <TableRow key={voter._id}>
-                <TableCell>{voter.pin}</TableCell>
-                <TableCell>{voter.name}</TableCell>
-                <TableCell>
-                  <FaRegTrashAlt
-                    className="cursor-pointer hover:text-red-500 text-lg"
-                    onClick={() => handleTrashClick(voter._id)}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>) : <div className="flex justify-center"><CircularProgress color="info"/></div>}
+      <div style={{ height: 'auto', width: "100%", marginTop: "20px" }}>
+        {voters.length ? (
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSizeOptions={[5, 10, 20]}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
+              },
+            }}
+            checkboxSelection
+            onRowSelectionModelChange={(id: any) => {
+              setSelectedIds(id);
+            }}
+            rowSelectionModel={selectedIds}
+          />
+        ) : (
+          <div className="flex justify-center">
+            <CircularProgress color="info" />
+          </div>
+        )}
       </div>
 
       {snackbar.opened && (
@@ -166,4 +169,5 @@ function Voters() {
     </div>
   );
 }
+
 export default Voters;
