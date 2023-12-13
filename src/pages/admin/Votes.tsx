@@ -125,7 +125,7 @@ function Votes() {
         </div>
       </div>
 
-      <div style={{ height: 'auto', width: "100%", marginTop: "20px" }}>
+      <div style={{ height: "auto", width: "100%", marginTop: "20px" }}>
         {votes.length ? (
           <DataGrid
             rows={rows}
@@ -155,6 +155,7 @@ function Votes() {
         open={openDialog}
         handleClose={toggleDialog}
         setDelete={setDeleteConfirmed}
+        selectedIds={selectedIds}
       />
     </div>
   );
