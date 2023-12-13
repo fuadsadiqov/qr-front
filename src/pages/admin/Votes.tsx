@@ -112,7 +112,10 @@ function Votes() {
         <h1 className="text-2xl font-medium">Votes</h1>
         <div className="flex items-center justify-center gap-3">
           {selectedIds.length >= 1 && (
-            <FaRegTrashAlt className="cursor-pointer hover:text-red-500 text-lg" />
+            <FaRegTrashAlt
+              className="cursor-pointer hover:text-red-500 text-lg"
+              onClick={() => setOpenDialog(true)}
+            />
           )}
           <TextField
             id="pin"
