@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { environment } from "../../environment/environment"
+import { environment } from "../../environment/environment.prod"
 import { DASHBOARD_URL } from "../../constants/url"
 import { fetchApi } from "../../utils/fetch"
 import { ApiMethods } from "../../interfaces/method"
