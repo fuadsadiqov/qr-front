@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { environment } from "../../environment/environment.prod";
 import { VOTER_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
-import { ApiMethods, SnackbarStatus } from "../../interfaces/method";
+import { ApiMethods } from "../../interfaces/method";
 import { CircularProgress, Button, TextField } from "@mui/material";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { Voter } from "../../interfaces/method";
@@ -100,14 +100,16 @@ function Voters() {
     ...voter,
   }));
 
-
   return (
     <div>
       <div className="flex w-full items-center justify-between">
         <h1 className="text-2xl font-medium">Voters</h1>
         <div className="flex items-center justify-center gap-4">
           {selectedIds.length >= 1 && (
-            <FaRegTrashAlt className="cursor-pointer hover:text-red-500 text-lg" />
+            <FaRegTrashAlt
+              className="cursor-pointer hover:text-red-500 text-lg"
+              onClick={() => setOpenDialog(true)}
+            />
           )}
           <TextField
             id="pin"
@@ -127,7 +129,7 @@ function Voters() {
         </div>
       </div>
 
-      <div style={{ height: 'auto', width: "100%", marginTop: "20px" }}>
+      <div style={{ height: "auto", width: "100%", marginTop: "20px" }}>
         {voters.length ? (
           <DataGrid
             rows={rows}
@@ -165,6 +167,7 @@ function Voters() {
         open={openDialog}
         handleClose={toggleDialog}
         setDelete={setDeleteConfirmed}
+        selectedIds={selectedIds}
       />
     </div>
   );
