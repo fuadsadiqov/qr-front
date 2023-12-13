@@ -45,5 +45,6 @@ export interface SnackbarInterface {
 
 export interface QRModalInterface{
   open: boolean,
-  value: string
+  value: string,
+  name: string
 }
