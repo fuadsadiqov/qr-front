@@ -5,12 +5,14 @@ interface SureDialogProps {
   open: boolean;
   handleClose: () => void;
   setDelete: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedIds: string[];
 }
 
 const SureDialog: React.FC<SureDialogProps> = ({
   open,
   handleClose,
   setDelete,
+  selectedIds,
 }) => {
   return (
     <Dialog
@@ -54,9 +56,16 @@ const SureDialog: React.FC<SureDialogProps> = ({
             clipRule="evenodd"
           ></path>
         </svg>
-        <p className="mb-4 text-gray-800">
-          Are you sure you want to delete this item?
-        </p>
+        {selectedIds.length > 1 ? (
+          <p className="mb-4 text-gray-800">
+            Are you sure you want to delete {selectedIds.length} items?
+          </p>
+        ) : (
+          <p className="mb-4 text-gray-800">
+            Are you sure you want to delete this item?
+          </p>
+        )}
+
         <div className="flex justify-center items-center space-x-4">
           <button
             type="submit"
