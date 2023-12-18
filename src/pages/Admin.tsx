@@ -8,8 +8,8 @@ import { AUTH_URL } from "../constants/url";
 import { ApiMethods } from "../interfaces/method";
 import { CircularProgress } from "@mui/material";
 
-function Admin(){
-    const [isAuth, setIsAuth] = useState<boolean | null>(null);
+function Admin() {
+  const [isAuth, setIsAuth] = useState<boolean | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,10 +38,16 @@ function Admin(){
     checkToken();
   }, [isAuth]);
 
-    return(
-        <>
-            {isAuth ? <Dashboard/> : <div className="flex justify-center pt-[100px]"><CircularProgress color="info"/></div>}
-        </>
-    )
+  return (
+    <>
+      {isAuth ? (
+        <Dashboard />
+      ) : (
+        <div className="flex justify-center pt-[100px]">
+          <CircularProgress color="info" />
+        </div>
+      )}
+    </>
+  );
 }
 export default Admin;

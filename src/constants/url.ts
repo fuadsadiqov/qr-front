@@ -2,7 +2,8 @@ export const VOTE_URL = {
     GET: 'votes',
     POST: 'votes',
     PUT: (id: string) => `votes/${id}`,
-    DELETE: (id: string) => `votes/${id}`
+    DELETE: (id: string) => `votes/${id}`,
+    POSTMULTI:  `manyVotes`
 }
 
 export const TEAM_URL = {
