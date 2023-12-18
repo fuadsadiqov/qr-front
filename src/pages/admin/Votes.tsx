@@ -42,12 +42,31 @@ function Votes() {
     trashClickIdRef.current = id;
   };
 
+  const handleMultiTrashClick = () => {
+    setOpenDialog(true);
+  };
+
   useEffect(() => {
     if (isDeleteConfirmed && trashClickIdRef.current) {
       removeVote(trashClickIdRef.current);
       setDeleteConfirmed(false);
     }
   }, [isDeleteConfirmed, trashClickIdRef]);
+
+  useEffect(() => {
+    if (isDeleteConfirmed && selectedIds) {
+      removeMultiVotes(selectedIds);
+      setDeleteConfirmed(false);
+      setSelectedIds([]);
+    }
+  }, [isDeleteConfirmed, selectedIds]);
+
+  const removeMultiVotes = async (ids: string[]) => {
+    fetch(
+      environment.apiUrl + VOTE_URL.POSTMULTI,
+      fetchApi(ApiMethods.POST, ids)
+    );
+  };
 
   const removeVote = async (voteId: string) => {
     fetch(
@@ -114,7 +133,7 @@ function Votes() {
           {selectedIds.length >= 1 && (
             <FaRegTrashAlt
               className="cursor-pointer hover:text-red-500 text-lg"
-              onClick={() => setOpenDialog(true)}
+              onClick={() => handleMultiTrashClick()}
             />
           )}
           <TextField
