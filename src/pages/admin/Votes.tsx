@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { environment } from "../../environment/environment.prod";
-import { environment as envProd } from "../../environment/environment";
 import { VOTE_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
 import { ApiMethods, SnackbarStatus } from "../../interfaces/method";
@@ -64,7 +63,7 @@ function Votes() {
 
   const removeMultiVotes = async (ids: string[]) => {
     fetch(
-      envProd.apiUrl + VOTE_URL.POSTMULTI,
+      environment.apiUrl + VOTE_URL.POSTMULTI,
       fetchApi(ApiMethods.POST, {ids})
     );
   };
