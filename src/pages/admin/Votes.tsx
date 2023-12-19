@@ -21,6 +21,7 @@ interface Vote {
 
 function Votes() {
   const [votes, setVotes] = useState<Vote[]>([]);
+  const [isLoad, setIsLoad] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isDeleteConfirmed, setDeleteConfirmed] = useState(false);
   const [newVoteFetching, setNewVoteFetching] = useState(false);
@@ -54,7 +55,7 @@ function Votes() {
   }, [isDeleteConfirmed, trashClickIdRef]);
 
   useEffect(() => {
-    if (isDeleteConfirmed && selectedIds.length > 1) {
+    if (isDeleteConfirmed && selectedIds.length) {
       removeMultiVotes(selectedIds);
       setDeleteConfirmed(false);
       setSelectedIds([]);
@@ -62,10 +63,24 @@ function Votes() {
   }, [isDeleteConfirmed, selectedIds]);
 
   const removeMultiVotes = async (ids: string[]) => {
+    const selectedRows = rows.filter((vote: any) => ids.includes(vote.id));
+    const deleteIds = selectedRows.map((row) => row._id);
+
     fetch(
       environment.apiUrl + VOTE_URL.POSTMULTI,
-      fetchApi(ApiMethods.POST, {ids})
-    );
+      fetchApi(ApiMethods.POST, { ids: deleteIds })
+    )
+      .then((res) => res.json())
+      .then(
+        (data) =>
+          data &&
+          (setNewVoteFetching((prevVoteFetching) => !prevVoteFetching),
+          setSnackbar({
+            opened: true,
+            status: SnackbarStatus.SUCCESSFULL,
+            message: "Votes removed successfully",
+          }))
+      );
   };
 
   const removeVote = async (voteId: string) => {
@@ -81,18 +96,22 @@ function Votes() {
           setSnackbar({
             opened: true,
             status: SnackbarStatus.SUCCESSFULL,
-            message: "Voter removed successfully",
+            message: "Vote removed successfully",
           }))
       );
   };
 
   useEffect(() => {
+    setIsLoad(true);
     fetch(
       environment.apiUrl + VOTE_URL.GET,
       fetchApi(ApiMethods.GET, undefined)
     )
       .then((res) => res.json())
-      .then((data) => setVotes(data));
+      .then((data) => {
+        setVotes(data);
+        setIsLoad(false);
+      });
   }, [newVoteFetching]);
 
   const columns = [
@@ -148,7 +167,7 @@ function Votes() {
       </div>
 
       <div style={{ height: "auto", width: "100%", marginTop: "20px" }}>
-        {votes.length ? (
+        {isLoad == false && votes.length ? (
           <DataGrid
             rows={rows}
             columns={columns}
@@ -161,18 +180,21 @@ function Votes() {
             }}
             pageSizeOptions={[6, 10, 20]}
             checkboxSelection
-            onRowSelectionModelChange={(id: any) => {
-              setSelectedIds(id);
+            onRowSelectionModelChange={(_id: any) => {
+              setSelectedIds(_id);
             }}
             rowSelectionModel={selectedIds}
           />
         ) : (
-          <div className="flex justify-center">
-            <CircularProgress color="info" />
-          </div>
+          <div className="flex justify-center text-xl">Votes is empty</div>
         )}
       </div>
       <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
+      {isLoad && (
+        <div className="flex justify-center">
+          <CircularProgress color="info" />
+        </div>
+      )}
       <SureDialog
         open={openDialog}
         handleClose={toggleDialog}
