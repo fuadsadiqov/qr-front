@@ -21,6 +21,7 @@ interface Vote {
 
 function Votes() {
   const [votes, setVotes] = useState<Vote[]>([]);
+  const [isLoad, setIsLoad] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isDeleteConfirmed, setDeleteConfirmed] = useState(false);
   const [newVoteFetching, setNewVoteFetching] = useState(false);
@@ -64,7 +65,7 @@ function Votes() {
   const removeMultiVotes = async (ids: string[]) => {
     fetch(
       environment.apiUrl + VOTE_URL.POSTMULTI,
-      fetchApi(ApiMethods.POST, {ids})
+      fetchApi(ApiMethods.POST, { ids })
     );
   };
 
@@ -87,12 +88,16 @@ function Votes() {
   };
 
   useEffect(() => {
+    setIsLoad(true);
     fetch(
       environment.apiUrl + VOTE_URL.GET,
       fetchApi(ApiMethods.GET, undefined)
     )
       .then((res) => res.json())
-      .then((data) => setVotes(data));
+      .then((data) => {
+        setVotes(data);
+        setIsLoad(false);
+      });
   }, [newVoteFetching]);
 
   const columns = [
@@ -148,7 +153,7 @@ function Votes() {
       </div>
 
       <div style={{ height: "auto", width: "100%", marginTop: "20px" }}>
-        {votes.length ? (
+        {(isLoad == false && votes.length) ? (
           <DataGrid
             rows={rows}
             columns={columns}
@@ -167,12 +172,15 @@ function Votes() {
             rowSelectionModel={selectedIds}
           />
         ) : (
-          <div className="flex justify-center">
-            <CircularProgress color="info" />
-          </div>
+          <div className="flex justify-center text-xl">Votes is empty</div>
         )}
       </div>
       <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
+      {isLoad && (
+        <div className="flex justify-center">
+          <CircularProgress color="info" />
+        </div>
+      )}
       <SureDialog
         open={openDialog}
         handleClose={toggleDialog}
