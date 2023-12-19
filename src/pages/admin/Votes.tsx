@@ -54,7 +54,7 @@ function Votes() {
   }, [isDeleteConfirmed, trashClickIdRef]);
 
   useEffect(() => {
-    if (isDeleteConfirmed && selectedIds) {
+    if (isDeleteConfirmed && selectedIds.length > 1) {
       removeMultiVotes(selectedIds);
       setDeleteConfirmed(false);
       setSelectedIds([]);
@@ -64,7 +64,7 @@ function Votes() {
   const removeMultiVotes = async (ids: string[]) => {
     fetch(
       environment.apiUrl + VOTE_URL.POSTMULTI,
-      fetchApi(ApiMethods.POST, ids)
+      fetchApi(ApiMethods.POST, {ids})
     );
   };
 
