@@ -29,7 +29,7 @@ function Voters() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
+  const [loading, setLoading] = useState(false);
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -89,26 +89,34 @@ function Voters() {
   const addMultipleVoters = async (
     generatedVoters: { pin: string; name: string }[]
   ) => {
-    fetch(
-      environment.apiUrl + VOTER_URL.ADDMULTIPLE,
-      fetchApi(ApiMethods.POST, { generatedVoters: generatedVoters })
-    )
-      .then((res) => res.json())
-      .then(
-        (data) =>
-          data &&
-          (setNewVoterFetching((prevVoterFetching) => !prevVoterFetching),
-          setSnackbar({
-            opened: true,
-            status: SnackbarStatus.SUCCESSFULL,
-            message: "Votes removed successfully",
-          }))
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        environment.apiUrl + VOTER_URL.ADDMULTIPLE,
+        fetchApi(ApiMethods.POST, { generatedVoters: generatedVoters })
       );
+      const data = await response.json();
+
+      if (data) {
+        setNewVoterFetching((prevVoterFetching) => !prevVoterFetching);
+        setSnackbar({
+          opened: true,
+          status: SnackbarStatus.SUCCESSFULL,
+          message: "Voters added successfully",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding voters:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const removeMultiVoters = async (ids: string[]) => {
     const selectedRows = rows.filter((vote: any) => ids.includes(vote.id));
     const deleteIds = selectedRows.map((row) => row._id);
+    setLoading(true);
 
     fetch(
       environment.apiUrl + VOTER_URL.REMOVE_MULTIPLE,
@@ -124,7 +132,10 @@ function Voters() {
             status: SnackbarStatus.SUCCESSFULL,
             message: "Votes removed successfully",
           }))
-      );
+      )
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const removeVoter = async (voterId: string) => {
@@ -145,7 +156,8 @@ function Voters() {
       fetchApi(ApiMethods.GET, undefined)
     )
       .then((res) => res.json())
-      .then((data) => setVoters(data));
+      .then((data) => setVoters(data))
+      .finally(() => setLoading(false));
   }, [newVoterFetching]);
 
   const columns = [
@@ -179,6 +191,8 @@ function Voters() {
     id: index + 1,
     ...voter,
   }));
+
+
 
   return (
     <div>
@@ -233,31 +247,37 @@ function Voters() {
         </div>
       </div>
 
-      <div style={{ height: "auto", width: "100%", marginTop: "20px" }}>
-        {voters.length ? (
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSizeOptions={[5, 10, 20]}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 5,
+      {!loading ? (
+        <div style={{ height: "auto", width: "100%", marginTop: "20px" }}>
+          {voters.length > 0 || loading ? (
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSizeOptions={[5, 10, 20]}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
+                  },
                 },
-              },
-            }}
-            checkboxSelection
-            onRowSelectionModelChange={(id: any) => {
-              setSelectedIds(id);
-            }}
-            rowSelectionModel={selectedIds}
-          />
-        ) : (
-          <div className="flex justify-center">
-            <CircularProgress color="info" />
-          </div>
-        )}
-      </div>
+              }}
+              checkboxSelection
+              onRowSelectionModelChange={(id: any) => {
+                setSelectedIds(id);
+              }}
+              rowSelectionModel={selectedIds}
+            />
+          ) : (
+            <div className="flex justify-center">
+              <CircularProgress color="info" />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex justify-center mt-10">
+          <CircularProgress color="info" />
+        </div>
+      )}
 
       {snackbar.opened && (
         <CustomizedSnackbars open={snackbar} setOpen={setSnackbar} />
