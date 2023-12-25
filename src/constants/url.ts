@@ -19,6 +19,7 @@ export const VOTER_URL = {
   PUT: (id: string) => `voters/${id}`,
   DELETE: (id: string) => `voters/${id}`,
   ADDMULTIPLE: "manyVoters",
+  REMOVE_MULTIPLE: "removeVoters"
 };
 
 export const IMAGE_URL = {

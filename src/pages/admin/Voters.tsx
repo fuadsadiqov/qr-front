@@ -29,9 +29,6 @@ function Voters() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [generatedVoters, setGeneratedVoters] = useState<
-    { pin: string; name: string }[]
-  >([]);
 
   const open = Boolean(anchorEl);
 
@@ -56,12 +53,8 @@ function Voters() {
       };
       generatedVotersArray.push(generatedVoter);
     }
-
-    setGeneratedVoters(generatedVotersArray);
-    addMultipleVoters();
+    addMultipleVoters(generatedVotersArray);
   };
-
-  console.log(generatedVoters);
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -83,7 +76,7 @@ function Voters() {
     }
   }, [isDeleteConfirmed, trashClickIdRef]);
 
-  const addMultipleVoters = async () => {
+  const addMultipleVoters = async (generatedVoters: { pin: string; name: string }[]) => {
     fetch(
       environment.apiUrl + VOTER_URL.ADDMULTIPLE,
       fetchApi(ApiMethods.POST, { generatedVoters: generatedVoters })
@@ -93,11 +86,11 @@ function Voters() {
         (data) =>
           data &&
           (setNewVoterFetching((prevVoterFetching) => !prevVoterFetching),
-          setSnackbar({
-            opened: true,
-            status: SnackbarStatus.SUCCESSFULL,
-            message: "Votes removed successfully",
-          }))
+            setSnackbar({
+              opened: true,
+              status: SnackbarStatus.SUCCESSFULL,
+              message: "Votes removed successfully",
+            }))
       );
   };
   const removeVoter = async (voterId: string) => {
