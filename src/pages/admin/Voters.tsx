@@ -46,7 +46,9 @@ function Voters() {
     const generatedVotersArray = [];
 
     for (let i = 0; i < count; i++) {
-      const randomPin = Math.floor(100000 + Math.random() * 900000);
+      const randomPin = Math.floor(100000 + Math.random() * Date.now())
+        .toString()
+        .slice(4, 8);
       const generatedVoter = {
         pin: randomPin.toString(),
         name: `Member ${randomPin}`,
@@ -76,7 +78,17 @@ function Voters() {
     }
   }, [isDeleteConfirmed, trashClickIdRef]);
 
-  const addMultipleVoters = async (generatedVoters: { pin: string; name: string }[]) => {
+  useEffect(() => {
+    if (isDeleteConfirmed && selectedIds.length) {
+      removeMultiVoters(selectedIds);
+      setDeleteConfirmed(false);
+      setSelectedIds([]);
+    }
+  }, [isDeleteConfirmed, selectedIds]);
+
+  const addMultipleVoters = async (
+    generatedVoters: { pin: string; name: string }[]
+  ) => {
     fetch(
       environment.apiUrl + VOTER_URL.ADDMULTIPLE,
       fetchApi(ApiMethods.POST, { generatedVoters: generatedVoters })
@@ -86,13 +98,35 @@ function Voters() {
         (data) =>
           data &&
           (setNewVoterFetching((prevVoterFetching) => !prevVoterFetching),
-            setSnackbar({
-              opened: true,
-              status: SnackbarStatus.SUCCESSFULL,
-              message: "Votes removed successfully",
-            }))
+          setSnackbar({
+            opened: true,
+            status: SnackbarStatus.SUCCESSFULL,
+            message: "Votes removed successfully",
+          }))
       );
   };
+
+  const removeMultiVoters = async (ids: string[]) => {
+    const selectedRows = rows.filter((vote: any) => ids.includes(vote.id));
+    const deleteIds = selectedRows.map((row) => row._id);
+
+    fetch(
+      environment.apiUrl + VOTER_URL.REMOVE_MULTIPLE,
+      fetchApi(ApiMethods.POST, { ids: deleteIds })
+    )
+      .then((res) => res.json())
+      .then(
+        (data) =>
+          data &&
+          (setNewVoterFetching((prevVoterFetching) => !prevVoterFetching),
+          setSnackbar({
+            opened: true,
+            status: SnackbarStatus.SUCCESSFULL,
+            message: "Votes removed successfully",
+          }))
+      );
+  };
+
   const removeVoter = async (voterId: string) => {
     fetch(
       environment.apiUrl + VOTER_URL.DELETE(voterId),
@@ -180,7 +214,7 @@ function Voters() {
             aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
           >
-            Multiple voter
+            Add multiple voters
           </Button>
           <Menu
             id="basic-menu"
