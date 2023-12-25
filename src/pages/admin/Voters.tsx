@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { environment } from "../../environment/environment.prod";
 import { VOTER_URL } from "../../constants/url";
 import { fetchApi } from "../../utils/fetch";
-import { ApiMethods } from "../../interfaces/method";
+import { ApiMethods, SnackbarStatus } from "../../interfaces/method";
 import { CircularProgress, Button, TextField } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { Voter } from "../../interfaces/method";
 import { SnackbarInterface } from "../../interfaces/method";
@@ -26,6 +28,33 @@ function Voters() {
   const trashClickIdRef = useRef<string | null>(null);
   const [searchValue, setSearchValue] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = (value: number) => {
+    setAnchorEl(null);
+    if (value) {
+      generateMultipleVoter(value);
+    }
+  };
+
+  const generateMultipleVoter = (count: number) => {
+    const generatedVotersArray = [];
+
+    for (let i = 0; i < count; i++) {
+      const randomPin = Math.floor(100000 + Math.random() * 900000);
+      const generatedVoter = {
+        pin: randomPin.toString(),
+        name: `Member ${randomPin}`,
+      };
+      generatedVotersArray.push(generatedVoter);
+    }
+    addMultipleVoters(generatedVotersArray);
+  };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -47,6 +76,23 @@ function Voters() {
     }
   }, [isDeleteConfirmed, trashClickIdRef]);
 
+  const addMultipleVoters = async (generatedVoters: { pin: string; name: string }[]) => {
+    fetch(
+      environment.apiUrl + VOTER_URL.ADDMULTIPLE,
+      fetchApi(ApiMethods.POST, { generatedVoters: generatedVoters })
+    )
+      .then((res) => res.json())
+      .then(
+        (data) =>
+          data &&
+          (setNewVoterFetching((prevVoterFetching) => !prevVoterFetching),
+            setSnackbar({
+              opened: true,
+              status: SnackbarStatus.SUCCESSFULL,
+              message: "Votes removed successfully",
+            }))
+      );
+  };
   const removeVoter = async (voterId: string) => {
     fetch(
       environment.apiUrl + VOTER_URL.DELETE(voterId),
@@ -126,6 +172,30 @@ function Voters() {
           >
             Add Voter
           </Button>
+          <Button
+            variant="contained"
+            sx={{ height: "48px" }}
+            aria-controls={open ? "basic-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+          >
+            Multiple voter
+          </Button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem onClick={() => handleClose(10)}>10</MenuItem>
+            <MenuItem onClick={() => handleClose(20)}>20</MenuItem>
+            <MenuItem onClick={() => handleClose(50)}>50</MenuItem>
+            <MenuItem onClick={() => handleClose(100)}>100</MenuItem>
+          </Menu>
         </div>
       </div>
 
