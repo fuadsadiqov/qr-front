@@ -35,6 +35,8 @@ export default function DashboardItem() {
       .finally(() => {
         if (ratingData.length === 0) {
           setIsEmpty(true);
+        } else {
+          setIsEmpty(false);
         }
       });
   }, []);
@@ -42,18 +44,17 @@ export default function DashboardItem() {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-xl font-medium">Average rating for teams</span>
-      {!isEmpty ? (
-        <div>
-          {ratingData.length ? (
-            <BarChart data={ratingData} labels={categories} />
+
+      {ratingData.length ? (
+        <BarChart data={ratingData} labels={categories} />
+      ) : (
+        <div className="flex justify-center">
+          {!isEmpty ? (
+            <CircularProgress color="info" />
           ) : (
-            <div className="flex justify-center">
-              <CircularProgress color="info" />
-            </div>
+            <div>There is no rating yet.</div>
           )}
         </div>
-      ) : (
-        <div className="w-full text-center">There is no rating yet.</div>
       )}
     </div>
   );
