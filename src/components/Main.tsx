@@ -30,6 +30,11 @@ function Main() {
     sendVote();
   };
 
+  const handleVote = (event: any) => {
+    const point = event.target.value;
+    setSelectedNumber(point)
+  }
+
   const sendVote = () => {
     let sendVoteBody = {
       voterId: pin,
@@ -49,7 +54,8 @@ function Main() {
         }else{
           data && setOpen(true)
           setTimeout(() => {
-            setOpen(false)
+            setOpen(false);
+            location.reload();
           }, 3000);
         }
       })
@@ -57,13 +63,18 @@ function Main() {
   }
 
   useEffect(() => {
-    fetch(
-      environment.apiUrl + TEAM_URL.PUT(id),
-      fetchApi(ApiMethods.GET, undefined)
-    )
+    fetch(environment.apiUrl + TEAM_URL.PUT(id), fetchApi(ApiMethods.GET, undefined))
       .then((res) => res.json())
-      .then((data) => setTeam(data));
+      .then((data) => {
+        const teamMembers = data.teamMembers.map((member: any) => JSON.parse(member));
+  
+        setTeam({ ...data, teamMembers });
+      })
+      .catch((error) => {
+        console.error("Error fetching team data:", error);
+      });
   }, [id]);
+  
   return (
     <div className="p-[64px] max-md:p-[20px]">
       <div className="font-Inter">
@@ -94,7 +105,8 @@ function Main() {
         </p>
         <div className="w-full bg-gega-main py-10 px-10 rounded-lg flex justify-around text-white">
           <div className="flex justify-around items-center flex-wrap gap-10 w-full">
-            {numbers.map((number) => (
+            <input type="number" className="text-black p-2" min="0" max="50" onChange={() => handleVote(event)} />
+            {/* {numbers.map((number) => (
               <div
                 key={number}
                 onClick={() => setSelectedNumber(number)}
@@ -104,7 +116,7 @@ function Main() {
               >
                 <p className="text-[20px] font-semibold">{number}</p>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
         <div className="w-full bg-gega-main h-[85px] rounded-lg flex justify-around items-center text-white mt-10">

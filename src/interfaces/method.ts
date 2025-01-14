@@ -18,18 +18,18 @@ export enum SnackbarStatus {
 
 export interface Team {
   name: string;
-  _id: number;
+  id: number;
 }
 
 export interface Voter {
-  _id: string;
+  id: string;
   name: string;
   pin: string;
 }
 
 export interface TeamWithMembers {
   name: string;
-  _id: string;
+  id: string;
   teamMembers: {
     name: string;
     type: number | string;

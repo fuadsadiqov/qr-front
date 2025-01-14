@@ -12,7 +12,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { TextField, CircularProgress } from "@mui/material";
 
 interface Vote {
-  _id: string;
+  voteId: string;
   voterId: string;
   teamId: string;
   teamName: string;
@@ -64,7 +64,7 @@ function Votes() {
 
   const removeMultiVotes = async (ids: string[]) => {
     const selectedRows = rows.filter((vote: any) => ids.includes(vote.id));
-    const deleteIds = selectedRows.map((row) => row._id);
+    const deleteIds = selectedRows.map((row) => row.voteId);
 
     fetch(
       environment.apiUrl + VOTE_URL.POSTMULTI,
@@ -127,7 +127,9 @@ function Votes() {
       renderCell: (params: any) => (
         <FaRegTrashAlt
           className="cursor-pointer hover:text-red-500 text-lg"
-          onClick={() => handleTrashClick(params.row._id)}
+          onClick={() => {
+            removeVote(params.row.id)
+          }}
         />
       ),
     },
@@ -149,12 +151,12 @@ function Votes() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-medium">Votes</h1>
         <div className="flex items-center justify-center gap-3">
-          {selectedIds.length >= 1 && (
+          {/* {selectedIds.length >= 1 && (
             <FaRegTrashAlt
               className="cursor-pointer hover:text-red-500 text-lg"
               onClick={() => handleMultiTrashClick()}
             />
-          )}
+          )} */}
           <TextField
             id="pin"
             name="pin"
@@ -180,8 +182,8 @@ function Votes() {
             }}
             pageSizeOptions={[6, 10, 20]}
             checkboxSelection
-            onRowSelectionModelChange={(_id: any) => {
-              setSelectedIds(_id);
+            onRowSelectionModelChange={(voteId: any) => {
+              setSelectedIds(voteId);
             }}
             rowSelectionModel={selectedIds}
           />

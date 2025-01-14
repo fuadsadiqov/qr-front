@@ -31,13 +31,13 @@ function AllTeams() {
         <div>
           {teams.length ? teams.map((team) => (
             <div
-              key={team._id}
+              key={team.id}
               className="w-full bg-gega-main mt-6 flex justify-between items-center py-4 px-6 rounded-3xl"
             >
               <p className="text-white text-2xl font-medium">{team.name}</p>
               <button
                 className="border border-white px-10 py-3 text-xl text-white hover:bg-white hover:text-gega-main transition-colors font-medium rounded-2xl"
-                onClick={() => navigate(`/teamId/${team._id}`)}
+                onClick={() => navigate(`/teamId/${team.id}`)}
               >
                 Səs verin
               </button>
