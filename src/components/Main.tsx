@@ -31,7 +31,10 @@ function Main() {
 
   const handleVote = (event: any) => {
     const point = event.target.value;
-    setSelectedNumber(point)
+    if(point >= 0 && point <= 50)
+    {
+      setSelectedNumber(point)
+    }
   }
 
   const sendVote = () => {
@@ -41,7 +44,9 @@ function Main() {
       teamId: id,
       teamName: team.name
     }
-    fetch(environment.apiUrl + VOTE_URL.POST, fetchApi(ApiMethods.POST, sendVoteBody))
+    if(selectedNumber)
+    {
+      fetch(environment.apiUrl + VOTE_URL.POST, fetchApi(ApiMethods.POST, sendVoteBody))
       .then(res => res.json())
       .then(data => {
         if(data.error){
@@ -58,7 +63,13 @@ function Main() {
           }, 3000);
         }
       })
-      
+    }else{
+      setSnackbar({
+        opened: true,
+        status: SnackbarStatus.UNSUCCESSFULL,
+        message: "Bal daxil edilməyib",
+      })
+    }
   }
 
   useEffect(() => {
