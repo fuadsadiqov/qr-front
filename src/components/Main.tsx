@@ -104,7 +104,7 @@ function Main() {
         </p>
         <div className="w-full bg-gega-main py-10 px-10 rounded-lg flex justify-around text-white">
           <div className="flex justify-around items-center flex-wrap gap-10 w-full">
-            <input type="number" className="text-black p-2" min="0" max="50" onChange={() => handleVote(event)} />
+            <input type="number" className="text-black py-2 px-8" min="0" max="50" onChange={() => handleVote(event)} />
             {/* {numbers.map((number) => (
               <div
                 key={number}
