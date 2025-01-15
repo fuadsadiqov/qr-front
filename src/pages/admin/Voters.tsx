@@ -115,7 +115,7 @@ function Voters() {
 
   const removeMultiVoters = async (ids: string[]) => {
     const selectedRows = rows.filter((vote: any) => ids.includes(vote.id));
-    const deleteIds = selectedRows.map((row) => row._id);
+    const deleteIds = selectedRows.map((row) => row.id);
     setLoading(true);
 
     fetch(
@@ -188,7 +188,7 @@ function Voters() {
   });
 
   const rows = filteredVoters.map((voter, index) => ({
-    id: index + 1,
+    _id: index + 1,
     ...voter,
   }));
 

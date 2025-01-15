@@ -9,7 +9,6 @@ import { CircularProgress } from "@mui/material";
 import CustomizedSnackbars from "./Snackbar";
 
 function Main() {
-  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   let { id }: any = useParams();
   const [selectedNumber, setSelectedNumber] = useState<number>();
   const [pin, setPin] = useState<string>("");

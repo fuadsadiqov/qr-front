@@ -38,15 +38,6 @@ function Votes() {
     setOpenDialog(!openDialog);
   };
 
-  const handleTrashClick = (id: string) => {
-    setOpenDialog(true);
-    trashClickIdRef.current = id;
-  };
-
-  const handleMultiTrashClick = () => {
-    setOpenDialog(true);
-  };
-
   useEffect(() => {
     if (isDeleteConfirmed && trashClickIdRef.current) {
       removeVote(trashClickIdRef.current);

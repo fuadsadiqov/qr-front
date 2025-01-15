@@ -111,12 +111,12 @@ function Teams() {
       </div>
       {teams.length ? (
         teams.map((team) => (
-          <div key={team._id} className="mt-10 p-3">
+          <div key={team.id} className="mt-10 p-3">
             <div className="flex items-center justify-between mb-2">
               <h4>{team.name}</h4>
               <div className="flex gap-2 items-center">
                 <img
-                  onClick={() => createQR({ id: team._id, name: team.name })}
+                  onClick={() => createQR({ id: team.id, name: team.name })}
                   width={35}
                   src="/qr-icon.svg"
                   className="cursor-pointer"
@@ -125,7 +125,7 @@ function Teams() {
                 />
                 <FaRegTrashAlt
                   className="text-xl cursor-pointer hover:text-red-500"
-                  onClick={() => handleTrashClick(team._id)}
+                  onClick={() => handleTrashClick(team.id)}
                 />
               </div>
             </div>
