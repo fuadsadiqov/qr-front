@@ -31,10 +31,7 @@ function Main() {
 
   const handleVote = (event: any) => {
     const point = event.target.value;
-    if(point >= 0 && point <= 50)
-    {
-      setSelectedNumber(point)
-    }
+    setSelectedNumber(point)
   }
 
   const sendVote = () => {
@@ -44,7 +41,7 @@ function Main() {
       teamId: id,
       teamName: team.name
     }
-    if(selectedNumber)
+    if(selectedNumber && selectedNumber >= 0 && selectedNumber <= 50)
     {
       fetch(environment.apiUrl + VOTE_URL.POST, fetchApi(ApiMethods.POST, sendVoteBody))
       .then(res => res.json())
@@ -67,7 +64,7 @@ function Main() {
       setSnackbar({
         opened: true,
         status: SnackbarStatus.UNSUCCESSFULL,
-        message: "Bal daxil edilməyib",
+        message: "0 la 50 arasında bal daxil edilməlidir",
       })
     }
   }
@@ -115,7 +112,9 @@ function Main() {
         </p>
         <div className="w-full bg-gega-main py-10 px-10 rounded-lg flex justify-around text-white">
           <div className="flex justify-around items-center flex-wrap gap-10 w-full">
-            <input type="number" className="text-black py-2 px-8" min="0" max="50" onChange={() => handleVote(event)} />
+            <div className="flex flex-col gap-1 items-center justify-center">
+              <input type="number" placeholder="Bal (0-50)" className="text-black py-2 px-3 w-32" min="0" max="50" onChange={() => handleVote(event)} />
+            </div>
             {/* {numbers.map((number) => (
               <div
                 key={number}
