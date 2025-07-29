@@ -66,7 +66,7 @@ Votes are cast using a simple PIN-based system and results are visualized with c
 ### 📦 Clone & Install
 
 ```bash
-git clone https://github.com/your-username/qr-voting-app.git
+git clone https://github.com/fuadsadiqov/qr-front.git
 cd qr-voting-app
 ```
 🔧 Setup Frontend
